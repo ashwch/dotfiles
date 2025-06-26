@@ -1,0 +1,250 @@
+# Starship Configuration - Modern Developer Setup
+# ~/.config/starship.toml
+
+# General settings
+format = """
+[](color_orange)\
+$os\
+$username\
+[](bg:color_yellow fg:color_orange)\
+$directory\
+[](fg:color_yellow bg:color_aqua)\
+$git_branch\
+$git_status\
+[](fg:color_aqua bg:color_blue)\
+$nodejs\
+$python\
+$package\
+[](fg:color_blue bg:color_bg3)\
+$docker_context\
+$conda\
+$character"""
+
+right_format = """
+$cmd_duration\
+$time"""
+
+# Define colors
+palette = 'gruvbox_dark'
+
+[palettes.gruvbox_dark]
+color_fg0 = '#fbf1c7'
+color_bg1 = '#3c3836'
+color_bg3 = '#665c54'
+color_blue = '#458588'
+color_aqua = '#689d6a'
+color_green = '#98971a'
+color_orange = '#d65d0e'
+color_purple = '#b16286'
+color_red = '#cc241d'
+color_yellow = '#d79921'
+
+# OS module
+[os]
+disabled = false
+style = "bg:color_orange fg:color_fg0"
+
+[os.symbols]
+Macos = " "
+Ubuntu = " "
+Windows = "󰍲 "
+
+# Username
+[username]
+show_always = false
+style_user = "bg:color_orange fg:color_fg0"
+style_root = "bg:color_orange fg:color_fg0"
+format = '[ $user ]($style)'
+
+# Directory
+[directory]
+style = "fg:color_fg0 bg:color_yellow"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Pictures" = " "
+"Developer" = "󰲋 "
+"Projects" = "󰲋 "
+"Code" = "󰲋 "
+
+# Git branch
+[git_branch]
+symbol = ""
+style = "bg:color_aqua"
+format = '[[ $symbol $branch ](fg:color_fg0 bg:color_aqua)]($style)'
+
+# Git status
+[git_status]
+style = "bg:color_aqua"
+format = '[[($all_status$ahead_behind )](fg:color_fg0 bg:color_aqua)]($style)'
+stashed = '󰏗 '
+ahead = '⇡${count}'
+diverged = '⇕⇡${ahead_count}⇣${behind_count}'
+behind = '⇣${count}'
+deleted = '🗑${count}'
+renamed = '󰁕${count}'
+modified = '📝${count}'
+staged = '[++\($count\)](green)'
+untracked = '🤷${count}'
+
+# Git commit
+[git_commit]
+commit_hash_length = 4
+tag_symbol = '🔖 '
+
+# Git state
+[git_state]
+format = '[\($state( $progress_current of $progress_total)\)]($style) '
+cherry_pick = '[🍒 PICKING](bold red)'
+
+# Node.js
+[nodejs]
+symbol = ""
+style = "bg:color_blue"
+format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+detect_extensions = ["js", "mjs", "cjs", "ts", "tsx"]
+detect_files = ["package.json", ".nvmrc"]
+detect_folders = ["node_modules"]
+
+# Python
+[python]
+symbol = ""
+style = "bg:color_blue"
+format = '[[ $symbol( $version)( \($virtualenv\)) ](fg:color_fg0 bg:color_blue)]($style)'
+detect_extensions = ["py"]
+detect_files = [".python-version", "Pipfile", "pyproject.toml", "requirements.txt", "setup.py", "tox.ini"]
+
+# Package version
+[package]
+symbol = "󰏗 "
+style = "bg:color_blue"
+format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+# Docker context
+[docker_context]
+symbol = " "
+style = "bg:color_bg3"
+format = '[[ $symbol( $context) ](fg:#83a598 bg:color_bg3)]($style)'
+
+# Conda
+[conda]
+style = "bg:color_bg3"
+symbol = " "
+format = '[[ $symbol( $environment) ](fg:#83a598 bg:color_bg3)]($style)'
+
+# Command duration
+[cmd_duration]
+min_time = 1_000
+style = "fg:color_fg0"
+format = "[ 󰔛 $duration ]($style)"
+
+# Time
+[time]
+disabled = false
+time_format = "%R"
+style = "bg:color_bg1"
+format = '[[  $time ](fg:color_fg0 bg:color_bg1)]($style)'
+
+# Character (prompt symbol)
+[character]
+disabled = false
+success_symbol = '[](bold fg:color_green)'
+error_symbol = '[](bold fg:color_red)'
+vimcmd_symbol = '[](bold fg:color_green)'
+vimcmd_replace_one_symbol = '[](bold fg:color_purple)'
+vimcmd_replace_symbol = '[](bold fg:color_purple)'
+vimcmd_visual_symbol = '[](bold fg:color_yellow)'
+
+# Language-specific modules
+[rust]
+symbol = ""
+style = "bg:color_blue"
+format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+[golang]
+symbol = ""
+style = "bg:color_blue"
+format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+[php]
+symbol = ""
+style = "bg:color_blue"
+format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+[java]
+symbol = " "
+style = "bg:color_blue"
+format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+# Cloud modules
+[aws]
+symbol = "  "
+style = "bg:color_orange"
+format = '[[ $symbol( $profile)( \($region\))( \[$duration\]) ](fg:color_fg0 bg:color_orange)]($style)'
+
+[gcloud]
+symbol = "  "
+style = "bg:color_orange"
+format = '[[ $symbol( $account)( \($region\)) ](fg:color_fg0 bg:color_orange)]($style)'
+
+# Kubernetes
+[kubernetes]
+symbol = "󱃾 "
+style = "bg:color_bg3"
+format = '[[ $symbol( $context)( \($namespace\)) ](fg:#83a598 bg:color_bg3)]($style)'
+disabled = false
+
+# Terraform
+[terraform]
+symbol = "󱁢 "
+style = "bg:color_bg3"
+format = '[[ $symbol( $workspace) ](fg:#83a598 bg:color_bg3)]($style)'
+
+# Additional useful modules
+[memory_usage]
+disabled = false
+threshold = 75
+symbol = "󰍛 "
+style = "bg:color_bg3"
+format = '[[ $symbol( ${ram})( | ${swap}) ](fg:color_red bg:color_bg3)]($style)'
+
+[battery]
+full_symbol = "🔋 "
+charging_symbol = "⚡️ "
+discharging_symbol = "💀 "
+
+[[battery.display]]
+threshold = 10
+style = "bold red"
+
+[[battery.display]]
+threshold = 30
+style = "bold yellow"
+
+# Custom commands
+
+# Additional development tools
+[helm]
+symbol = "⎈ "
+style = "bg:color_bg3"
+format = '[[ $symbol( $version) ](fg:#83a598 bg:color_bg3)]($style)'
+
+[cmake]
+symbol = "△ "
+style = "bg:color_blue"
+format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+[vagrant]
+symbol = "⍱ "
+style = "bg:color_bg3"
+format = '[[ $symbol( $version) ](fg:#83a598 bg:color_bg3)]($style)'
+
+[nix_shell]
+symbol = " "
+style = "bg:color_blue"
+format = '[[ $symbol( $state)( \($name\)) ](fg:color_fg0 bg:color_blue)]($style)'

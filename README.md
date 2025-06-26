@@ -81,6 +81,11 @@ ln -sf ~/dotfiles/.zshrc ~/.zshrc
 ln -sf ~/dotfiles/.gitconfig ~/.gitconfig  
 ln -sf ~/dotfiles/.fzf.zsh ~/.fzf.zsh
 
+# Config directory files
+mkdir -p ~/.config/git
+ln -sf ~/dotfiles/.config/starship.toml ~/.config/starship.toml
+ln -sf ~/dotfiles/.config/git/ignore ~/.config/git/ignore
+
 # Reload shell
 source ~/.zshrc
 ```

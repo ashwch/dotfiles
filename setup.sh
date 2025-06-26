@@ -109,6 +109,11 @@ backup_and_link "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
 backup_and_link "$DOTFILES_DIR/.gitconfig" "$HOME/.gitconfig"
 backup_and_link "$DOTFILES_DIR/.fzf.zsh" "$HOME/.fzf.zsh"
 
+# Install config directory files
+mkdir -p "$HOME/.config/git"
+backup_and_link "$DOTFILES_DIR/.config/starship.toml" "$HOME/.config/starship.toml"
+backup_and_link "$DOTFILES_DIR/.config/git/ignore" "$HOME/.config/git/ignore"
+
 echo "✅ Dotfiles installed successfully!"
 
 echo ""
