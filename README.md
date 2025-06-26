@@ -43,26 +43,47 @@ This repository contains my carefully curated dotfiles, focusing on a modern, fa
 
 ## Installation
 
+### Complete Setup (Recommended)
+
 1. Clone this repository:
    ```bash
    git clone <your-repo-url> ~/dotfiles
    cd ~/dotfiles
    ```
 
-2. Backup your existing configuration:
+2. Run the setup script:
    ```bash
-   cp ~/.zshrc ~/.zshrc.backup
+   ./setup.sh
    ```
+   
+   This single script will:
+   - Install Command Line Tools (if needed)
+   - Install Homebrew (if needed) 
+   - Install all required dependencies
+   - Create symlinks for your dotfiles
+   - Set up development tools
 
-3. Create a symlink or copy the configuration:
-   ```bash
-   ln -sf ~/dotfiles/.zshrc ~/.zshrc
-   ```
+   **Note:** If Command Line Tools aren't installed, the script will prompt you to install them first, then re-run the script.
 
-4. Reload your shell:
-   ```bash
-   source ~/.zshrc
-   ```
+3. Restart your terminal and enjoy!
+
+### Manual Installation
+
+If you already have the dependencies and want to just symlink the dotfiles:
+
+```bash
+# Backup existing configs
+cp ~/.zshrc ~/.zshrc.backup
+cp ~/.gitconfig ~/.gitconfig.backup
+
+# Create symlinks
+ln -sf ~/dotfiles/.zshrc ~/.zshrc
+ln -sf ~/dotfiles/.gitconfig ~/.gitconfig  
+ln -sf ~/dotfiles/.fzf.zsh ~/.fzf.zsh
+
+# Reload shell
+source ~/.zshrc
+```
 
 ## Key Aliases & Functions
 
