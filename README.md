@@ -4,7 +4,7 @@ My personal collection of configuration files and development environment setup.
 
 ## Overview
 
-This repository contains my carefully curated dotfiles, focusing on a modern, fast, and productive development environment.
+This repository contains my carefully curated dotfiles, focusing on a modern, fast, and productive development environment with consistent coding styles and comprehensive tooling.
 
 ## Features
 
@@ -35,6 +35,15 @@ This repository contains my carefully curated dotfiles, focusing on a modern, fa
 - **fzf** - Fuzzy finder integration
 - **starship** - Modern prompt
 - **thefuck** - Command correction
+
+### 📝 Code Quality & Consistency
+- **EditorConfig** - Consistent coding styles across editors
+- **Enhanced readline** - Better shell input handling
+- **Global Git ignore** - Project-agnostic ignore patterns
+
+### 📦 Package Management
+- **Brewfile** - Reproducible package installations
+- **Update scripts** - Automated maintenance utilities
 
 ### 🐳 Docker & DevOps
 - Docker and docker-compose aliases
@@ -80,11 +89,16 @@ cp ~/.gitconfig ~/.gitconfig.backup
 ln -sf ~/dotfiles/.zshrc ~/.zshrc
 ln -sf ~/dotfiles/.gitconfig ~/.gitconfig  
 ln -sf ~/dotfiles/.fzf.zsh ~/.fzf.zsh
+ln -sf ~/dotfiles/.editorconfig ~/.editorconfig
+ln -sf ~/dotfiles/.inputrc ~/.inputrc
 
 # Config directory files
 mkdir -p ~/.config/git
 ln -sf ~/dotfiles/.config/starship.toml ~/.config/starship.toml
 ln -sf ~/dotfiles/.config/git/ignore ~/.config/git/ignore
+
+# Install packages from Brewfile
+brew bundle --file=~/dotfiles/Brewfile
 
 # Reload shell
 source ~/.zshrc
@@ -143,6 +157,15 @@ $ git status
 - **Aliases & Functions** - Productivity shortcuts
 - **Modern Tools** - Integration with CLI utilities
 - **Key Bindings** - Custom keyboard shortcuts
+
+## Utility Scripts
+
+The `scripts/` directory contains helpful maintenance utilities:
+
+- **update-dotfiles** - Updates packages, Brewfile, and pulls latest dotfiles
+  ```bash
+  ./scripts/update-dotfiles
+  ```
 
 ## Customization
 

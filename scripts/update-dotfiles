@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Update dotfiles and system packages
+# Usage: ./scripts/update-dotfiles
+
+set -e
+
+echo "🔄 Updating dotfiles and system packages..."
+
+# Navigate to dotfiles directory
+cd "$HOME/dotfiles"
+
+# Update Brewfile
+echo "📦 Updating Brewfile..."
+brew bundle dump --force --file=Brewfile
+
+# Update Homebrew and packages
+echo "🍺 Updating Homebrew packages..."
+brew update && brew upgrade
+
+# Cleanup old versions
+echo "🧹 Cleaning up old package versions..."
+brew cleanup
+
+# Update dotfiles repo
+echo "📡 Pulling latest dotfiles..."
+git pull origin main
+
+# Regenerate FZF bindings if needed
+if command -v fzf >/dev/null 2>&1; then
+    echo "🔍 Updating FZF key bindings..."
+    $(brew --prefix)/opt/fzf/install --key-bindings --completion --no-update-rc
+fi
+
+echo "✅ Dotfiles and packages updated successfully!"
+echo "🔄 Restart your terminal to apply all changes"

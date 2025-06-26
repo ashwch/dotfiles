@@ -108,11 +108,19 @@ DOTFILES_DIR="$HOME/dotfiles"
 backup_and_link "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
 backup_and_link "$DOTFILES_DIR/.gitconfig" "$HOME/.gitconfig"
 backup_and_link "$DOTFILES_DIR/.fzf.zsh" "$HOME/.fzf.zsh"
+backup_and_link "$DOTFILES_DIR/.editorconfig" "$HOME/.editorconfig"
+backup_and_link "$DOTFILES_DIR/.inputrc" "$HOME/.inputrc"
 
 # Install config directory files
 mkdir -p "$HOME/.config/git"
 backup_and_link "$DOTFILES_DIR/.config/starship.toml" "$HOME/.config/starship.toml"
 backup_and_link "$DOTFILES_DIR/.config/git/ignore" "$HOME/.config/git/ignore"
+
+# Install packages from Brewfile
+if [ -f "$DOTFILES_DIR/Brewfile" ]; then
+    echo "📦 Installing packages from Brewfile..."
+    brew bundle --file="$DOTFILES_DIR/Brewfile"
+fi
 
 echo "✅ Dotfiles installed successfully!"
 
