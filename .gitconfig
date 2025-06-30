@@ -3,3 +3,5 @@
 	email = ashwch3018@gmail.com
 [init]
 	defaultBranch = main
+[core]
+	editor = vim

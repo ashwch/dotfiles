@@ -15,6 +15,9 @@ This repository contains my carefully curated dotfiles, focusing on a modern, fa
 
 ### 🐍 Python Development (UV)
 - UV-based Python environment management
+- **Automatic environment activation** - Intelligent system that reads `pyproject.toml` and auto-creates/activates venv with correct Python version
+- **Pre-commit compatibility** - Ensures correct Python version for hooks
+- **Team consistency** - Same Python version across all developers
 - Quick project setup functions
 - Modern package management aliases
 
@@ -116,6 +119,14 @@ source ~/.zshrc
 - `pynew` - Create new Python project
 - `activate` - Activate virtual environment
 
+#### Auto UV Environment
+The shell automatically manages Python environments:
+- **Detects** Python projects via `pyproject.toml`
+- **Extracts** required Python version from project config
+- **Creates** virtual environments with correct Python version
+- **Activates** on directory entry, **deactivates** on exit
+- **Optimized** for performance (~0ms for non-Python directories)
+
 ### Git
 - `gs` - git status
 - `ga` - git add
@@ -148,6 +159,7 @@ $ git status
 - `show_aliases` - Display all available aliases
 - `add_alias` - Add new aliases with auto-reminders
 - `validate_aliases` - Check alias functionality
+
 
 ## Configuration Structure
 

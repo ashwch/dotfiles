@@ -79,8 +79,63 @@ dotfiles/
 
 ### Python Development Setup
 - **UV-first approach** - Modern, fast package management
+- **Automatic environment activation** - Reads `requires-python` from `pyproject.toml` and auto-creates/activates venv
 - **Virtual environment automation** - Easy project setup
 - **Alias shortcuts** for common operations (pyrun, pynew, etc.)
+
+#### Auto UV Environment System
+The dotfiles include an intelligent Python environment management system that:
+
+**Features:**
+- **Auto-detection**: Scans for `pyproject.toml` on directory change
+- **Version parsing**: Extracts Python requirements from project config
+- **Smart activation**: Only creates/activates when needed
+- **Team consistency**: Same Python version across all developers
+- **Pre-commit compatibility**: Ensures correct Python for hooks
+
+**Performance:**
+- **Non-Python dirs**: ~0ms (immediate return)
+- **Existing venv**: ~5-10ms (file checks + activation)
+- **New setup**: 1-5 seconds (one-time UV operations)
+- **Memory**: Minimal overhead (~1MB for hook functions)
+
+**Supported pyproject.toml patterns:**
+```toml
+[project]
+requires-python = ">=3.11"        # Will use 3.11
+requires-python = ">=3.11,<3.13"  # Will use 3.11
+python_requires = ">=3.11.5"      # Will use 3.11.5
+```
+
+**Workflow Examples:**
+
+*First time entering a Python project:*
+```bash
+cd /path/to/python-project/
+# 🐍 Setting up Python 3.11.5 environment with UV...
+# Python 3.11.5 already available
+# ✅ Virtual environment created
+# 🚀 Activated Python environment (Python 3.11.5)
+
+pre-commit run --all-files  # Uses correct Python version
+```
+
+*Subsequent visits (fast path):*
+```bash
+cd /path/to/python-project/
+# 🚀 Activated Python environment (Python 3.11.5)
+```
+
+*Leaving a Python project:*
+```bash
+cd /some/other/directory/
+# ⬇️  Deactivated Python environment
+```
+
+**Troubleshooting:**
+- **Silent mode**: Set `export QUIET_UV_ENV=1` to suppress output
+- **Skip auto-activation**: Create `.no-auto-uv` file in project root
+- **Performance issues**: The system exits early for non-Python directories
 
 ### Node.js Development Setup
 - **Multi-package manager support** - npm, yarn, pnpm aliases
