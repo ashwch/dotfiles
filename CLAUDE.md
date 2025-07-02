@@ -37,10 +37,12 @@ This is a **comprehensive macOS development environment** setup using modern dot
 - **Setup integration** - Scripts made executable automatically
 
 ### Claude Code Integration
-- **Permissions management** - Version controlled Claude Code settings
-- **Team consistency** - Shared tool permissions across developers
-- **Setup automation** - Claude settings automatically configured
-- **Safe sharing** - Only permissions, no sensitive data
+- **Complete settings management** - Both main and local Claude Code settings
+- **Hooks configuration** - Notification hooks and custom scripts integration
+- **Permissions management** - Version controlled tool permissions
+- **Team consistency** - Shared Claude configuration across developers
+- **Setup automation** - All Claude settings automatically configured
+- **Safe sharing** - Only configuration and permissions, no sensitive data
 
 ## Architecture Decisions
 
@@ -68,7 +70,8 @@ dotfiles/
 ├── bin/                      # Custom scripts (version controlled)
 │   └── start_dashboard_app.sh # Example custom script
 ├── .claude/                  # Claude Code settings
-│   └── settings.local.json  # Claude permissions and configuration
+│   ├── settings.json        # Claude hooks and main configuration
+│   └── settings.local.json  # Claude permissions and local settings
 ├── .config/
 │   ├── starship.toml        # Prompt configuration with Gruvbox theme
 │   └── git/ignore           # Global gitignore patterns
@@ -219,13 +222,16 @@ git commit -m "Add my_script.sh utility"
 ### Managing Claude Code Settings
 ```bash
 # Update Claude settings in dotfiles
+cp ~/.claude/settings.json ~/dotfiles/.claude/
 cp ~/.claude/settings.local.json ~/dotfiles/.claude/
 
 # Commit changes for team sharing
-git add .claude/settings.local.json
-git commit -m "Update Claude Code permissions"
+git add .claude/
+git commit -m "Update Claude Code configuration and permissions"
 
 # Settings automatically apply on new machines via setup.sh
+# - settings.json: hooks, notifications, main config
+# - settings.local.json: permissions, local preferences
 ```
 
 ## Integration Points

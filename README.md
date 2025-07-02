@@ -54,9 +54,11 @@ This repository contains my carefully curated dotfiles, focusing on a modern, fa
 - **Team sharing** - Custom tools shared across team members
 
 ### 🤖 Claude Code Integration
-- **Permissions tracking** - Claude Code settings version controlled
-- **Team consistency** - Shared tool permissions across developers
-- **Automatic setup** - Settings configured on new machines
+- **Complete settings tracking** - Both main and local Claude Code configuration
+- **Hooks management** - Notification scripts and custom integrations
+- **Permissions tracking** - Tool permissions version controlled
+- **Team consistency** - Shared Claude configuration across developers
+- **Automatic setup** - All settings configured on new machines
 
 ### 🐳 Docker & DevOps
 - Docker and docker-compose aliases

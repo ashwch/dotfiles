@@ -118,11 +118,19 @@ backup_and_link "$DOTFILES_DIR/.config/git/ignore" "$HOME/.config/git/ignore"
 
 # Install Claude Code settings
 echo "🤖 Setting up Claude Code settings..."
+mkdir -p "$HOME/.claude"
+
+if [ -f "$DOTFILES_DIR/.claude/settings.json" ]; then
+    backup_and_link "$DOTFILES_DIR/.claude/settings.json" "$HOME/.claude/settings.json"
+    echo "✅ Claude Code main settings configured"
+fi
+
 if [ -f "$DOTFILES_DIR/.claude/settings.local.json" ]; then
-    mkdir -p "$HOME/.claude"
     backup_and_link "$DOTFILES_DIR/.claude/settings.local.json" "$HOME/.claude/settings.local.json"
-    echo "✅ Claude Code settings configured"
-else
+    echo "✅ Claude Code local settings configured"
+fi
+
+if [ ! -f "$DOTFILES_DIR/.claude/settings.json" ] && [ ! -f "$DOTFILES_DIR/.claude/settings.local.json" ]; then
     echo "⚠️  No Claude settings found - skipping"
 fi
 
