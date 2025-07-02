@@ -1,0 +1,10 @@
+# Exclude system-specific binaries that shouldn't be version controlled
+# Examples of files to exclude:
+# code  # VS Code symlink (system-specific)
+
+# Include this file to keep the bin directory in git
+!.gitignore
+
+# Add specific exclusions here as needed
+# Example:
+# system-specific-script.sh

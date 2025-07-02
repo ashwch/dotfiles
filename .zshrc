@@ -27,6 +27,9 @@ export BROWSER="open"
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
+# Custom scripts from dotfiles
+export PATH="$HOME/dotfiles/bin:$PATH"
+
 # PostgreSQL 17
 export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
 

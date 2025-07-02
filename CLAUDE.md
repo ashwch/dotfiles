@@ -30,6 +30,18 @@ This is a **comprehensive macOS development environment** setup using modern dot
 - **Enhanced readline** via .inputrc for better shell input handling
 - **Global Git ignore** patterns for common development artifacts
 
+### Custom Scripts Management
+- **Version controlled scripts** in `bin/` directory
+- **Automatic PATH inclusion** - Scripts available globally
+- **Team shareable** - Custom tools across all team members
+- **Setup integration** - Scripts made executable automatically
+
+### Claude Code Integration
+- **Permissions management** - Version controlled Claude Code settings
+- **Team consistency** - Shared tool permissions across developers
+- **Setup automation** - Claude settings automatically configured
+- **Safe sharing** - Only permissions, no sensitive data
+
 ## Architecture Decisions
 
 ### Performance Priorities
@@ -53,6 +65,10 @@ dotfiles/
 ├── .fzf.zsh                 # Fuzzy finder configuration
 ├── .editorconfig            # Cross-editor coding standards
 ├── .inputrc                 # Enhanced readline behavior
+├── bin/                      # Custom scripts (version controlled)
+│   └── start_dashboard_app.sh # Example custom script
+├── .claude/                  # Claude Code settings
+│   └── settings.local.json  # Claude permissions and configuration
 ├── .config/
 │   ├── starship.toml        # Prompt configuration with Gruvbox theme
 │   └── git/ignore           # Global gitignore patterns
@@ -183,6 +199,33 @@ time zsh -i -c exit  # Measure startup time
 ### Adding New Aliases
 ```bash
 add_alias <name> <command>  # Automatically includes in reminder system
+```
+
+### Managing Custom Scripts
+```bash
+# Add a new script to dotfiles
+cp /usr/local/bin/my_script.sh ~/dotfiles/bin/
+chmod +x ~/dotfiles/bin/my_script.sh
+
+# Scripts are automatically in PATH after reload
+source ~/.zshrc
+my_script.sh  # Available globally
+
+# For team sharing - commit the script
+git add bin/my_script.sh
+git commit -m "Add my_script.sh utility"
+```
+
+### Managing Claude Code Settings
+```bash
+# Update Claude settings in dotfiles
+cp ~/.claude/settings.local.json ~/dotfiles/.claude/
+
+# Commit changes for team sharing
+git add .claude/settings.local.json
+git commit -m "Update Claude Code permissions"
+
+# Settings automatically apply on new machines via setup.sh
 ```
 
 ## Integration Points

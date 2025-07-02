@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo $SHELL)",
+      "Bash(brew install:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(fzf:*)",
+      "Bash(source:*)",
+      "Bash(bindkey)",
+      "Bash(/opt/homebrew/opt/fzf/install:*)",
+      "Bash(brew reinstall:*)",
+      "Bash(zsh:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(grep:*)",
+      "Bash(time zsh:*)",
+      "Bash(for i in {1..5})",
+      "Bash(do time zsh -i -c exit)",
+      "Bash(done)",
+      "Bash(sed:*)",
+      "Bash(hyperfine:*)",
+      "Bash(git config:*)",
+      "Bash(chmod:*)",
+      "Bash(ssh-keygen:*)",
+      "Bash(ssh-add:*)",
+      "Bash(cat:*)",
+      "Bash(ssh:*)",
+      "Bash(gh auth:*)",
+      "Bash(brew link:*)",
+      "Bash(uv run:*)",
+      "Bash(exec zsh)"
+    ],
+    "deny": []
+  }
+}

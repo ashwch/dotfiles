@@ -48,6 +48,16 @@ This repository contains my carefully curated dotfiles, focusing on a modern, fa
 - **Brewfile** - Reproducible package installations
 - **Update scripts** - Automated maintenance utilities
 
+### 🛠️ Custom Scripts
+- **Version controlled** - Scripts in `bin/` directory tracked with dotfiles
+- **Global availability** - Automatically added to PATH
+- **Team sharing** - Custom tools shared across team members
+
+### 🤖 Claude Code Integration
+- **Permissions tracking** - Claude Code settings version controlled
+- **Team consistency** - Shared tool permissions across developers
+- **Automatic setup** - Settings configured on new machines
+
 ### 🐳 Docker & DevOps
 - Docker and docker-compose aliases
 - Container management shortcuts
@@ -144,6 +154,11 @@ The shell automatically manages Python environments:
 - `weather` - Get weather info
 - `backup` - Backup files with timestamp
 - `extract` - Universal archive extractor
+
+### Custom Scripts
+Custom scripts are stored in `bin/` and automatically available:
+- `start_dashboard_app.sh` - Example dashboard launcher
+- Add your own scripts to `~/dotfiles/bin/` for version control
 
 ## Smart Features
 

@@ -116,6 +116,27 @@ mkdir -p "$HOME/.config/git"
 backup_and_link "$DOTFILES_DIR/.config/starship.toml" "$HOME/.config/starship.toml"
 backup_and_link "$DOTFILES_DIR/.config/git/ignore" "$HOME/.config/git/ignore"
 
+# Install Claude Code settings
+echo "🤖 Setting up Claude Code settings..."
+if [ -f "$DOTFILES_DIR/.claude/settings.local.json" ]; then
+    mkdir -p "$HOME/.claude"
+    backup_and_link "$DOTFILES_DIR/.claude/settings.local.json" "$HOME/.claude/settings.local.json"
+    echo "✅ Claude Code settings configured"
+else
+    echo "⚠️  No Claude settings found - skipping"
+fi
+
+# Install custom scripts
+echo "🛠️ Setting up custom scripts..."
+if [ -d "$DOTFILES_DIR/bin" ]; then
+    # Make sure all scripts in bin/ are executable
+    chmod +x "$DOTFILES_DIR/bin/"*
+    echo "✅ Custom scripts made executable"
+else
+    echo "⚠️  No bin directory found - creating empty one"
+    mkdir -p "$DOTFILES_DIR/bin"
+fi
+
 # Install packages from Brewfile
 if [ -f "$DOTFILES_DIR/Brewfile" ]; then
     echo "📦 Installing packages from Brewfile..."
