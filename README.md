@@ -132,7 +132,7 @@ source ~/.zshrc
 - `activate` - Activate virtual environment
 
 #### Auto UV Environment
-The shell automatically manages Python environments:
+The shell automatically manages Python environments using [auto-uv-env](https://github.com/ashwch/auto-uv-env):
 - **Detects** Python projects via `pyproject.toml`
 - **Extracts** required Python version from project config
 - **Creates** virtual environments with correct Python version

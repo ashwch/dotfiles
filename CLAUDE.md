@@ -98,12 +98,12 @@ dotfiles/
 
 ### Python Development Setup
 - **UV-first approach** - Modern, fast package management
-- **Automatic environment activation** - Reads `requires-python` from `pyproject.toml` and auto-creates/activates venv
+- **Automatic environment activation** - Uses [auto-uv-env](https://github.com/ashwch/auto-uv-env) tool to read `requires-python` from `pyproject.toml` and auto-creates/activates venv
 - **Virtual environment automation** - Easy project setup
 - **Alias shortcuts** for common operations (pyrun, pynew, etc.)
 
 #### Auto UV Environment System
-The dotfiles include an intelligent Python environment management system that:
+The dotfiles integrate with [auto-uv-env](https://github.com/ashwch/auto-uv-env), an intelligent Python environment management tool that:
 
 **Features:**
 - **Auto-detection**: Scans for `pyproject.toml` on directory change
@@ -116,7 +116,7 @@ The dotfiles include an intelligent Python environment management system that:
 - **Non-Python dirs**: ~0ms (immediate return)
 - **Existing venv**: ~5-10ms (file checks + activation)
 - **New setup**: 1-5 seconds (one-time UV operations)
-- **Memory**: Minimal overhead (~1MB for hook functions)
+- **Memory**: Minimal overhead (standalone tool)
 
 **Supported pyproject.toml patterns:**
 ```toml
@@ -152,9 +152,10 @@ cd /some/other/directory/
 ```
 
 **Troubleshooting:**
-- **Silent mode**: Set `export QUIET_UV_ENV=1` to suppress output
-- **Skip auto-activation**: Create `.no-auto-uv` file in project root
-- **Performance issues**: The system exits early for non-Python directories
+- **Silent mode**: Set `export AUTO_UV_ENV_QUIET=1` to suppress output
+- **Debug mode**: Set `export AUTO_UV_ENV_DEBUG=1` for detailed logging
+- **Skip auto-activation**: Create `.auto-uv-env-ignore` file in project root
+- **Performance issues**: The tool exits early for non-Python directories
 
 ### Node.js Development Setup
 - **Multi-package manager support** - npm, yarn, pnpm aliases

@@ -276,67 +276,25 @@ command -v zoxide >/dev/null 2>&1 && {
 # Auto UV Environment - Intelligent Python Environment Management
 # =====================================================
 # 
-# This system automatically manages Python virtual environments using UV:
+# Using auto-uv-env tool for Python virtual environment management:
 # - Detects Python projects via pyproject.toml
 # - Extracts required Python version from project config
 # - Auto-installs Python versions and creates venvs
 # - Activates/deactivates environments on directory changes
 #
+# Tool: https://github.com/ashwch/auto-uv-env
 # Performance: ~0ms for non-Python dirs, ~5-10ms for existing venvs
 # One-time setup: 1-5 seconds for new environments
 #
-command -v uv >/dev/null 2>&1 && {
+command -v auto-uv-env >/dev/null 2>&1 && {
+    source $(brew --prefix)/share/auto-uv-env/auto-uv-env.zsh
+} || {
+    # Fallback message if auto-uv-env is not installed
     auto_uv_env() {
-        # Early exit for performance - check if we're in a Python project
         if [[ -f "pyproject.toml" ]]; then
-            local py_version=""
-            
-            # Parse Python version requirement from common pyproject.toml patterns
-            # Supports: requires-python = ">=3.11", python_requires = ">=3.11.5", etc.
-            if grep -q "requires-python" pyproject.toml; then
-                py_version=$(grep "requires-python" pyproject.toml | sed -E 's/.*[">]=?([0-9]+\.[0-9]+(\.[0-9]+)?).*/\1/' | head -1)
-            elif grep -q "python_requires" pyproject.toml; then
-                py_version=$(grep "python_requires" pyproject.toml | sed -E 's/.*[">]=?([0-9]+\.[0-9]+(\.[0-9]+)?).*/\1/' | head -1)
-            fi
-            
-            # Create virtual environment if it doesn't exist
-            if [[ ! -d ".venv" ]]; then
-                if [[ -n "$py_version" ]]; then
-                    echo "🐍 Setting up Python $py_version environment with UV..."
-                    # Install Python version if needed (UV handles this efficiently)
-                    uv python install "$py_version" 2>/dev/null || echo "Python $py_version already available"
-                    # Create venv with specific Python version
-                    uv venv --python "$py_version" || {
-                        echo "❌ Failed to create venv with Python $py_version, using default"
-                        uv venv
-                    }
-                else
-                    echo "🐍 Creating default Python environment with UV..."
-                    uv venv
-                fi
-                echo "✅ Virtual environment created"
-            fi
-            
-            # Activate venv if exists and we're not already in the correct one
-            # Performance: Only activate if path doesn't match current VIRTUAL_ENV
-            if [[ -f ".venv/bin/activate" ]] && [[ "$VIRTUAL_ENV" != "$PWD/.venv" ]]; then
-                source .venv/bin/activate
-                echo "🚀 Activated Python environment ($(python --version 2>/dev/null || echo "unknown"))"
-            fi
-        elif [[ -n "$VIRTUAL_ENV" ]] && [[ ! -f "pyproject.toml" ]]; then
-            # Deactivate when leaving Python projects (smart cleanup)
-            deactivate 2>/dev/null
-            echo "⬇️  Deactivated Python environment"
+            echo "auto-uv-env not found. Install with: brew install ashwch/tap/auto-uv-env" >&2
         fi
     }
-    
-    # Register directory change hook for automatic activation
-    # This runs auto_uv_env every time you cd into a directory
-    autoload -U add-zsh-hook
-    add-zsh-hook chpwd auto_uv_env
-    
-    # Run on shell startup if already in a Python project
-    auto_uv_env
 }
 
 # TheFuck - Correct your previous command
