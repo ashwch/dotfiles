@@ -287,7 +287,7 @@ command -v zoxide >/dev/null 2>&1 && {
 # One-time setup: 1-5 seconds for new environments
 #
 command -v auto-uv-env >/dev/null 2>&1 && {
-    source $(brew --prefix)/share/auto-uv-env/auto-uv-env.zsh
+    source /opt/homebrew/share/auto-uv-env/auto-uv-env.zsh
 } || {
     # Fallback message if auto-uv-env is not installed
     auto_uv_env() {
@@ -746,6 +746,6 @@ fkill() { ps aux | fzf | awk '{print $2}' | xargs kill -9 }
 # =====================================================
 
 # Fix for WeasyPrint with UV's isolated Python environment
-export DYLD_FALLBACK_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_FALLBACK_LIBRARY_PATH"
+export DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_FALLBACK_LIBRARY_PATH"
 
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
