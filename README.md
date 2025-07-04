@@ -37,7 +37,7 @@ This repository contains my carefully curated dotfiles, focusing on a modern, fa
 - **ripgrep** - Fast text search
 - **fzf** - Fuzzy finder integration
 - **starship** - Modern prompt
-- **thefuck** - Command correction
+- **ZSH built-in correction** - Command typo correction (setopt CORRECT)
 
 ### 📝 Code Quality & Consistency
 - **EditorConfig** - Consistent coding styles across editors
@@ -222,7 +222,7 @@ add_alias <name> <command>
 - **ripgrep** - Fast search
 - **fd** - Better find
 - **bat** - Better cat
-- **thefuck** - Command correction
+- **ZSH built-in correction** - Command typo correction (setopt CORRECT)
 
 ### Installation via Homebrew
 ```bash

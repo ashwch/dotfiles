@@ -297,8 +297,7 @@ command -v auto-uv-env >/dev/null 2>&1 && {
     }
 }
 
-# TheFuck - Correct your previous command
-command -v thefuck >/dev/null 2>&1 && eval "$(thefuck --alias)"
+# TheFuck removed - using ZSH's built-in correction (setopt CORRECT) instead
 
 # HTTPie aliases
 command -v http >/dev/null 2>&1 && {
