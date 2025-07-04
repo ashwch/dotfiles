@@ -266,11 +266,22 @@ command -v eza >/dev/null 2>&1 && {
     alias l.="eza -dla .* --color=always --group-directories-first"
 }
 
-# Zoxide - Smarter cd command
-command -v zoxide >/dev/null 2>&1 && {
-    eval "$(zoxide init zsh)"
+# Zoxide - Smarter cd command (lazy loaded for performance)
+# Saves ~9ms on shell startup by only initializing when first used
+if command -v zoxide >/dev/null 2>&1; then
+    # Lazy load zoxide - only initialize when first used
+    z() {
+        unfunction z zi 2>/dev/null
+        eval "$(zoxide init zsh)"
+        z "$@"
+    }
+    zi() {
+        unfunction z zi 2>/dev/null
+        eval "$(zoxide init zsh)"
+        zi "$@"
+    }
     alias cd="z"
-}
+fi
 
 # =====================================================
 # Auto UV Environment - Intelligent Python Environment Management
