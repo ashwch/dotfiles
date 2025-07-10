@@ -352,6 +352,10 @@ alias docs="cd ~/Documents"
 alias zshrc="$EDITOR ~/.zshrc"
 alias hosts="sudo $EDITOR /etc/hosts"
 
+# Secrets management
+alias refresh-secrets='rm -f "$SECRETS_CACHE" && load_sops_secrets && echo "🔄 Secrets cache refreshed"'
+
+
 # =====================================================
 # Utility Functions
 # =====================================================
@@ -717,8 +721,50 @@ eval "$(starship init zsh)"
 # Local Configuration
 # =====================================================
 
-# Load local configuration if it exists
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+# SOPS Secrets Management
+# Provides automatic loading of encrypted secrets with performance caching
+# Cache TTL: 5 minutes (configurable via SECRETS_CACHE_TTL)
+SECRETS_CACHE="/tmp/.sops_cache_${UID}"
+SECRETS_CACHE_TTL=300
+
+# Load encrypted secrets from SOPS with intelligent caching
+load_sops_secrets() {
+    # Check cache validity
+    if [[ -f "$SECRETS_CACHE" ]]; then
+        local cache_mod_time=$(stat -f %m "$SECRETS_CACHE" 2>/dev/null || stat -c %Y "$SECRETS_CACHE" 2>/dev/null || echo 0)
+        local cache_age=$(($(date +%s) - cache_mod_time))
+        
+        if [[ $cache_age -lt $SECRETS_CACHE_TTL ]]; then
+            source "$SECRETS_CACHE"
+            return 0
+        fi
+    fi
+    
+    # Decrypt secrets and generate export statements
+    local secrets_export
+    secrets_export=$(cd ~/dotfiles && \
+        sops -d .secrets.yaml 2>/dev/null | \
+        yq e '. | to_entries | .[] | "export " + .key + "=\"" + .value + "\""' - 2>/dev/null)
+    
+    if [[ -n "$secrets_export" ]]; then
+        # Cache for future shells
+        echo "$secrets_export" > "$SECRETS_CACHE"
+        chmod 600 "$SECRETS_CACHE"
+        
+        # Apply to current shell
+        eval "$secrets_export"
+    fi
+}
+
+# Initialize secrets if all dependencies are available
+if command -v sops &>/dev/null && \
+   command -v yq &>/dev/null && \
+   [[ -f ~/dotfiles/.secrets.yaml ]] && \
+   [[ -f ~/.config/sops/age/keys.txt ]]; then
+    load_sops_secrets
+fi
+
+
 
 # Load work-specific configuration if it exists  
 [[ -f ~/.zshrc.work ]] && source ~/.zshrc.work

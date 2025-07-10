@@ -47,10 +47,11 @@ This is a **comprehensive macOS development environment** setup using modern dot
 ## Architecture Decisions
 
 ### Performance Priorities
-1. **Sub-120ms shell startup** - Currently achieving ~105ms
-2. **Lazy loading** - NVM, completions, and heavy tools loaded on-demand
-3. **Conditional loading** - Tools only configured if installed
-4. **Minimal plugin approach** - No heavy frameworks like Oh-My-Zsh
+1. **Sub-60ms shell startup** - Currently achieving ~50ms with encrypted secrets
+2. **Smart caching** - SOPS secrets cached for 5 minutes (5-7ms overhead)
+3. **Lazy loading** - NVM, completions, and heavy tools loaded on-demand
+4. **Conditional loading** - Tools only configured if installed
+5. **Minimal plugin approach** - No heavy frameworks like Oh-My-Zsh
 
 ### Organization Strategy
 - **Single setup script** - Eliminated confusion of multiple installation scripts
@@ -62,7 +63,9 @@ This is a **comprehensive macOS development environment** setup using modern dot
 
 ```
 dotfiles/
-├── .zshrc                    # Main shell configuration (718 lines)
+├── .zshrc                    # Main shell configuration
+├── .secrets.yaml            # Encrypted secrets (SOPS + age)
+├── .sops.yaml              # SOPS configuration
 ├── .gitconfig               # Git global settings
 ├── .fzf.zsh                 # Fuzzy finder configuration
 ├── .editorconfig            # Cross-editor coding standards
@@ -267,7 +270,9 @@ git commit -m "Update Claude Code configuration and permissions"
 
 ## Performance Targets
 
-- **Shell startup**: < 120ms (current: ~105ms)
+- **Shell startup**: < 60ms (current: ~50ms with secrets)
+- **First shell (cold cache)**: < 100ms (current: ~95ms)
+- **Secrets loading overhead**: < 10ms (achieved: 5-7ms)
 - **Command completion**: < 100ms for common completions
 - **Directory switching**: Instant with zoxide
 - **Git operations**: Fast with comprehensive aliases

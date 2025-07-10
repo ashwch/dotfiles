@@ -48,6 +48,20 @@ This repository contains my carefully curated dotfiles, focusing on a modern, fa
 - **Brewfile** - Reproducible package installations
 - **Update scripts** - Automated maintenance utilities
 
+## 🔐 Secrets Management
+
+Secure SOPS + age encryption with automatic shell integration.
+
+### Commands
+- `secrets edit` - Edit secrets (auto-encrypts on save)
+- `secrets show` - Display decrypted secrets
+- `refresh-secrets` - Clear cache after changes
+
+### Setup
+1. Age key stored in password manager (one-time setup)
+2. New machine: save key to `~/.config/sops/age/keys.txt`
+3. Secrets auto-decrypt on shell startup (5-7ms overhead)
+
 ### 🛠️ Custom Scripts
 - **Version controlled** - Scripts in `bin/` directory tracked with dotfiles
 - **Global availability** - Automatically added to PATH
@@ -200,8 +214,7 @@ The `scripts/` directory contains helpful maintenance utilities:
 
 ### Local Configuration
 Add machine-specific settings to:
-- `~/.zshrc.local` - Personal overrides
-- `~/.zshrc.work` - Work-specific configuration
+- `~/.zshrc.work` - Work-specific configuration (non-secrets)
 
 ### Adding New Aliases
 ```bash

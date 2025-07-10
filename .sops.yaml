@@ -1,0 +1,12 @@
+# SOPS configuration for dotfiles secrets
+# This file tells SOPS how to encrypt/decrypt files
+
+creation_rules:
+  # Default rule for all files
+  - path_regex: \.secrets\.yaml$
+    age: age1dgz8fae897a6eslwdgw226t9pze8u84cl2u73s7l0lxmgqrxc9qqqsr9f6
+  
+  # You can add more recipients later:
+  # age: >-
+  #   age1dgz8fae897a6eslwdgw226t9pze8u84cl2u73s7l0lxmgqrxc9qqqsr9f6,
+  #   age1anotherkey...

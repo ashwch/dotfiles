@@ -1,0 +1,12 @@
+# Local configuration and secrets
+.zshrc.work
+.env
+.env.*
+*.local
+
+# Unencrypted secrets (safety net)
+.secrets.yaml.dec
+.secrets.decrypted.yaml
+
+# OS files
+.DS_Store

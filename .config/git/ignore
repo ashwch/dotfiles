@@ -2,3 +2,5 @@
 .env
 .env.local
 .env.secret
+
+**/.claude/settings.local.json
