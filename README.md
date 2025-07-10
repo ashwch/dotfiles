@@ -85,7 +85,7 @@ Secure SOPS + age encryption with automatic shell integration.
 
 1. Clone this repository:
    ```bash
-   git clone <your-repo-url> ~/dotfiles
+   git clone https://github.com/ashwch/dotfiles ~/dotfiles
    cd ~/dotfiles
    ```
 
@@ -173,7 +173,6 @@ The shell automatically manages Python environments using [auto-uv-env](https://
 
 ### Custom Scripts
 Custom scripts are stored in `bin/` and automatically available:
-- `start_dashboard_app.sh` - Example dashboard launcher
 - Add your own scripts to `~/dotfiles/bin/` for version control
 
 ## Smart Features

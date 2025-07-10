@@ -71,7 +71,6 @@ dotfiles/
 ├── .editorconfig            # Cross-editor coding standards
 ├── .inputrc                 # Enhanced readline behavior
 ├── bin/                      # Custom scripts (version controlled)
-│   └── start_dashboard_app.sh # Example custom script
 ├── .claude/                  # Claude Code settings
 │   ├── settings.json        # Claude hooks and main configuration
 │   └── settings.local.json  # Claude permissions and local settings
