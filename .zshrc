@@ -740,20 +740,30 @@ load_sops_secrets() {
         fi
     fi
     
-    # Decrypt secrets and generate export statements
-    local secrets_export
-    secrets_export=$(cd ~/dotfiles && \
-        sops -d .secrets.yaml 2>/dev/null | \
-        yq e '. | to_entries | .[] | "export " + .key + "=\"" + .value + "\""' - 2>/dev/null)
-    
-    if [[ -n "$secrets_export" ]]; then
-        # Cache for future shells
-        echo "$secrets_export" > "$SECRETS_CACHE"
-        chmod 600 "$SECRETS_CACHE"
-        
-        # Apply to current shell
-        eval "$secrets_export"
+    # Decrypt secrets first, and only proceed if successful
+    local decrypted_yaml
+    decrypted_yaml=$(cd ~/dotfiles && sops -d .secrets.yaml 2>/dev/null)
+
+    # Exit if decryption failed, preventing cache corruption. The last valid cache will be used.
+    if [[ $? -ne 0 ]] || [[ -z "$decrypted_yaml" ]]; then
+        echo "SOPS Error: Failed to decrypt secrets. Using last known values if available." >&2
+        return 1
     fi
+
+    # If decryption is successful, parse with yq
+    local secrets_export
+    secrets_export=$(echo "$decrypted_yaml" | yq e '. | to_entries | .[] | "export " + .key + "=\"" + .value + "\""' - 2>/dev/null)
+
+    # Exit if parsing failed
+    if [[ $? -ne 0 ]] || [[ -z "$secrets_export" ]]; then
+        echo "SOPS Error: Failed to parse secrets with yq. Check .secrets.yaml format." >&2
+        return 1
+    fi
+
+    # If both steps succeed, update the cache and apply to the current shell
+    echo "$secrets_export" > "$SECRETS_CACHE"
+    chmod 600 "$SECRETS_CACHE"
+    eval "$secrets_export"
 }
 
 # Initialize secrets if all dependencies are available
