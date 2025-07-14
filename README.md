@@ -2,6 +2,8 @@
 
 My personal collection of configuration files and development environment setup.
 
+<!-- Optional: Add a screenshot or GIF of your terminal setup in action here! -->
+
 ## Overview
 
 This repository contains my carefully curated dotfiles, focusing on a modern, fast, and productive development environment with consistent coding styles and comprehensive tooling.
@@ -48,6 +50,38 @@ This repository contains my carefully curated dotfiles, focusing on a modern, fa
 - **Brewfile** - Reproducible package installations
 - **Update scripts** - Automated maintenance utilities
 
+## What to Expect
+
+After installation, you'll have:
+
+### 🎨 **Visual Changes**
+- **Colorful prompt** with git status, language versions, and icons
+- **Syntax highlighting** in terminal commands
+- **Icons in file listings** (with eza)
+
+### ⚡ **Performance Improvements**
+- **Fast shell startup** (~50-100ms)
+- **Smart directory jumping** with `z` command
+- **Intelligent tab completion**
+
+### 🛠️ **New Commands Available**
+- `z <directory>` - Jump to frequently used directories
+- `fcd` - Fuzzy find and cd to directory
+- `weather` - Get weather information
+- `serve` - Start local HTTP server
+- `backup <file>` - Create timestamped backups
+- `extract <archive>` - Universal archive extractor
+
+### 🐍 **Python Development**
+- **Auto-environment activation** when entering Python projects
+- `pyrun <command>` - Smart uv run/uvx wrapper
+- `pynew <project>` - Create new Python project
+
+### 📝 **Enhanced Git Workflow**
+- Short aliases: `gs`, `ga`, `gc`, `gp`
+- Conventional commit helpers
+- Better diff and log output
+
 ## 🔐 Secrets Management (Optional)
 
 **Note:** Secrets management is completely optional. The dotfiles work perfectly without any secrets configuration.
@@ -55,9 +89,9 @@ This repository contains my carefully curated dotfiles, focusing on a modern, fa
 Secure SOPS + age encryption with automatic shell integration for storing API keys, tokens, etc.
 
 ### Commands
-- `secrets edit` - Edit secrets (auto-encrypts on save)
-- `secrets show` - Display decrypted secrets
-- `refresh-secrets` - Clear cache after changes
+- `secrets edit` - Securely edit secrets (auto-encrypts on save).
+- `secrets show` - Display decrypted secrets in the current terminal.
+- `refresh-secrets` - Force-updates the secrets cache across all terminals. (Useful if you `secrets edit` in one window and want to use the new values in another immediately).
 
 ### Setup (Only if you need to store secrets)
 1. Generate age key: `age-keygen -o ~/.config/sops/age/keys.txt`
@@ -179,38 +213,6 @@ zoxide --version # Smart cd
 fzf --version    # Fuzzy finder
 rg --version     # ripgrep
 ```
-
-## What to Expect
-
-After installation, you'll have:
-
-### 🎨 **Visual Changes**
-- **Colorful prompt** with git status, language versions, and icons
-- **Syntax highlighting** in terminal commands
-- **Icons in file listings** (with eza)
-
-### ⚡ **Performance Improvements**
-- **Fast shell startup** (~50-100ms)
-- **Smart directory jumping** with `z` command
-- **Intelligent tab completion**
-
-### 🛠️ **New Commands Available**
-- `z <directory>` - Jump to frequently used directories
-- `fcd` - Fuzzy find and cd to directory
-- `weather` - Get weather information
-- `serve` - Start local HTTP server
-- `backup <file>` - Create timestamped backups
-- `extract <archive>` - Universal archive extractor
-
-### 🐍 **Python Development**
-- **Auto-environment activation** when entering Python projects
-- `pyrun <command>` - Smart uv run/uvx wrapper
-- `pynew <project>` - Create new Python project
-
-### 📝 **Enhanced Git Workflow**
-- Short aliases: `gs`, `ga`, `gc`, `gp`
-- Conventional commit helpers
-- Better diff and log output
 
 ### Manual Installation
 
