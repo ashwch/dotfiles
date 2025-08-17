@@ -116,6 +116,28 @@ mkdir -p "$HOME/.config/git"
 backup_and_link "$DOTFILES_DIR/.config/starship.toml" "$HOME/.config/starship.toml"
 backup_and_link "$DOTFILES_DIR/.config/git/ignore" "$HOME/.config/git/ignore"
 
+# Install Ghostty config
+echo "👻 Setting up Ghostty config..."
+mkdir -p "$HOME/.config/ghostty"
+mkdir -p "$HOME/Library/Application Support/com.mitchellh.ghostty"
+
+if [ -f "$DOTFILES_DIR/.config/ghostty/config" ]; then
+    # Link to standard XDG location
+    backup_and_link "$DOTFILES_DIR/.config/ghostty/config" "$HOME/.config/ghostty/config"
+    
+    # Also link to Ghostty's default macOS location
+    GHOSTTY_DEFAULT="$HOME/Library/Application Support/com.mitchellh.ghostty/config"
+    if [ -f "$GHOSTTY_DEFAULT" ] || [ -L "$GHOSTTY_DEFAULT" ]; then
+        echo "📋 Backing up existing Ghostty default config"
+        cp "$GHOSTTY_DEFAULT" "$BACKUP_DIR/" 2>/dev/null || true
+    fi
+    backup_and_link "$DOTFILES_DIR/.config/ghostty/config" "$GHOSTTY_DEFAULT"
+    
+    echo "✅ Ghostty configuration linked to both locations"
+else
+    echo "⚠️  No Ghostty config found - skipping"
+fi
+
 # Install Claude Code settings
 echo "🤖 Setting up Claude Code settings..."
 mkdir -p "$HOME/.claude"
