@@ -42,7 +42,7 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 # Toggle the Quick Terminal from anywhere (system-wide)
-keybind = global:cmd+grave_accent=toggle_quick_terminal
+keybind = global:cmd+shift+1=toggle_quick_terminal
 
 # Tweak the overlay behavior (macOS-only)
 # Position options: top, bottom, left, right, center
