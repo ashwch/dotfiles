@@ -21,6 +21,28 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude-code-docs/claude-docs-helper.sh hook-check"
+          }
+        ]
+      }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "python3 /Users/monty/work/diversio/monolith-clickup_optimo_hr_platform-worktree/.claude/status-line.py"
+  },
+  "enabledPlugins": {
+    "pr-review-toolkit@claude-code-plugins": true
+  },
+  "alwaysThinkingEnabled": true,
+  "feedbackSurveyState": {
+    "lastShownTime": 1753991243673
   }
 }
