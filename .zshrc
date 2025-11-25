@@ -173,6 +173,7 @@ alias gfa="git fetch --all"
 alias gl="git log --oneline --graph --decorate"
 alias gla="git log --oneline --graph --decorate --all"
 alias gp="git push"
+alias gpoh="git push origin HEAD"
 alias gpu="git push -u origin"
 alias gpl="git pull"
 alias gr="git rebase"
@@ -193,6 +194,17 @@ alias gmor="git merge origin/release"
 gclone() { git clone "$1" && cd "$(basename "$1" .git)" }
 gcom() { git add --all && git commit -m "$*" }
 gpush() { git add --all && git commit -m "$*" && git push }
+
+# Merge a remote branch into the current branch:
+#   gmo feature   -> git merge origin/feature
+gmo() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: gmo <remote-branch>"
+        echo "Example: gmo feature   # merges origin/feature"
+        return 1
+    fi
+    git merge "origin/$1"
+}
 
 # =====================================================
 # Utility Aliases & Functions
