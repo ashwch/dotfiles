@@ -837,8 +837,9 @@ load_sops_secrets() {
         return 1
     fi
 
-    # If both steps succeed, update the cache and apply to the current shell
-    echo "$secrets_export" > "$SECRETS_CACHE"
+    # If both steps succeed, update the cache and apply to the current shell.
+    # Use '>|' to overwrite despite NO_CLOBBER being set globally.
+    echo "$secrets_export" >| "$SECRETS_CACHE"
     chmod 600 "$SECRETS_CACHE"
     eval "$secrets_export"
 }

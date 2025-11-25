@@ -1,464 +1,287 @@
 # Dotfiles
 
-My personal collection of configuration files and development environment setup.
+Opinionated dotfiles for a fast, consistent macOS development environment.  
+The setup is built around zsh, Homebrew, UV for Python, modern CLI tools, and a minimal but informative prompt.
 
-<!-- Optional: Add a screenshot or GIF of your terminal setup in action here! -->
+---
 
-## Overview
+## 1. Overview
 
-This repository contains my carefully curated dotfiles, focusing on a modern, fast, and productive development environment with consistent coding styles and comprehensive tooling.
+This repository configures:
 
-## Features
+- zsh and Starship prompt
+- Git (aliases, sensible defaults, rerere)
+- Python development using UV and `auto-uv-env`
+- Node.js development (npm, yarn, pnpm with lazy NVM)
+- Modern CLI tools (fzf, eza, zoxide, ripgrep, fd, bat, etc.)
+- Optional SOPS + age based secrets loading
+- Editor/terminal integrations (Ghostty, Claude Code)
 
-### 🚀 Performance Optimized
-- Fast shell startup with lazy loading
-- Optimized completion system
-- Smart alias reminder system
+The goal is to make a fresh macOS machine productive in a few minutes, with repeatable setup and minimal manual steps.
 
-### 🐍 Python Development (UV)
-- UV-based Python environment management
-- **Automatic environment activation** - Intelligent system that reads `pyproject.toml` and auto-creates/activates venv with correct Python version
-- **Pre-commit compatibility** - Ensures correct Python version for hooks
-- **Team consistency** - Same Python version across all developers
-- Quick project setup functions
-- Modern package management aliases
+---
 
-### 🌳 Git Workflow
-- Comprehensive git aliases
-- Conventional commit helpers
-- Advanced git functions
+## 2. Requirements
 
-### 📦 Node.js Development
-- Support for npm, yarn, and pnpm
-- Lazy-loaded NVM for performance
-- Common development task aliases
+**Platform**
+- macOS (tested on macOS 12 and newer)
+- zsh as the login shell (default on modern macOS)
 
-### 🛠️ Modern CLI Tools
-- **eza** - Better `ls` replacement
-- **zoxide** - Smart `cd` command
-- **ripgrep** - Fast text search
-- **fzf** - Fuzzy finder integration
-- **starship** - Modern prompt
-- **ZSH built-in correction** - Command typo correction (setopt CORRECT)
+**Tools (installed automatically by the setup script if missing)**
+- Xcode Command Line Tools
+- Homebrew
+- Git
 
-### 📝 Code Quality & Consistency
-- **EditorConfig** - Consistent coding styles across editors
-- **Enhanced readline** - Better shell input handling
-- **Global Git ignore** - Project-agnostic ignore patterns
+**Recommended**
+- A modern terminal (iTerm2, Ghostty, Warp, or Terminal.app)
+- A Nerd Font (installed by the setup script)
 
-### 📦 Package Management
-- **Brewfile** - Reproducible package installations
-- **Update scripts** - Automated maintenance utilities
+You can also install everything manually if you prefer (see section 4.2).
 
-## What to Expect
+---
 
-After installation, you'll have:
+## 3. What You Get
 
-### 🎨 **Visual Changes**
-- **Colorful prompt** with git status, language versions, and icons
-- **Syntax highlighting** in terminal commands
-- **Icons in file listings** (with eza)
+### 3.1 Shell and Prompt
 
-### ⚡ **Performance Improvements**
-- **Fast shell startup** (~50-100ms)
-- **Smart directory jumping** with `z` command
-- **Intelligent tab completion**
+- zsh with:
+  - Carefully tuned history and completion
+  - Smart directory navigation (zoxide)
+  - Alias reminder system that suggests shorter commands
+- Starship prompt with Git information and basic runtime indicators
 
-### 🛠️ **New Commands Available**
-- `z <directory>` - Jump to frequently used directories
-- `fcd` - Fuzzy find and cd to directory
-- `weather` - Get weather information
-- `serve` - Start local HTTP server
-- `backup <file>` - Create timestamped backups
-- `extract <archive>` - Universal archive extractor
+### 3.2 Python Development
 
-### 🐍 **Python Development**
-- **Auto-environment activation** when entering Python projects
-- `pyrun <command>` - Smart uv run/uvx wrapper
-- `pynew <project>` - Create new Python project
+- UV-based workflow:
+  - `pyrun` wrapper for `uv run` / `uvx`
+  - `pynew` for creating new projects
+- `auto-uv-env` integration:
+  - Detects `pyproject.toml`
+  - Creates and activates `.venv` with the correct Python version
 
-### 📝 **Enhanced Git Workflow**
-- Short aliases: `gs`, `ga`, `gc`, `gp`
-- Conventional commit helpers
-- Better diff and log output
+### 3.3 Node.js / JavaScript
 
-## 🔐 Secrets Management (Optional)
+- Lazy-loaded NVM
+- Aliases for npm, yarn, and pnpm common tasks (`ni`, `nr`, `nd`, etc.)
 
-**Note:** Secrets management is completely optional. The dotfiles work perfectly without any secrets configuration.
+### 3.4 Git
 
-Secure SOPS + age encryption with automatic shell integration for storing API keys, tokens, etc.
+- Short aliases:
+  - `gs`, `ga`, `gc`, `gp`, `gpl`, `gl`, `gds`, etc.
+  - `gpoh` for `git push origin HEAD`
+  - `gmo <branch>` for `git merge origin/<branch>`
+- Helpers:
+  - `gclone` (clone and cd)
+  - `gcom` (add-all + commit)
+  - `gpush` (add-all + commit + push)
 
-### Commands
-- `secrets edit` - Securely edit secrets (auto-encrypts on save).
-- `secrets show` - Display decrypted secrets in the current terminal.
-- `refresh-secrets` - Force-updates the secrets cache across all terminals. (Useful if you `secrets edit` in one window and want to use the new values in another immediately).
+### 3.5 Secrets (Optional)
 
-### Setup (Only if you need to store secrets)
-1. Generate age key: `age-keygen -o ~/.config/sops/age/keys.txt`
-2. Store the key safely (password manager recommended)
-3. Secrets auto-decrypt on shell startup (5-7ms overhead)
-4. If no secrets file exists, this feature is automatically skipped
+- SOPS + age integration for environment secrets stored in `.secrets.yaml`
+- Cached, encrypted loading into the shell
+- Convenience commands:
+  - `refresh-secrets` to rebuild the cache
 
-### 🛠️ Custom Scripts
-- **Version controlled** - Scripts in `bin/` directory tracked with dotfiles
-- **Global availability** - Automatically added to PATH
-- **Team sharing** - Custom tools shared across team members
+These features are only active if the required SOPS files and keys exist.
 
-### 🤖 Claude Code Integration
-- **Complete settings tracking** - Both main and local Claude Code configuration
-- **Hooks management** - Notification scripts and custom integrations
-- **Permissions tracking** - Tool permissions version controlled
-- **Team consistency** - Shared Claude configuration across developers
-- **Automatic setup** - All settings configured on new machines
+---
 
-### 🐳 Docker & DevOps
-- Docker and docker-compose aliases
-- Container management shortcuts
-- System monitoring tools
+## 4. Installation
 
-## Prerequisites
+### 4.1 Automated Setup (Recommended)
 
-Before installing these dotfiles, ensure you have:
-
-### Required
-- **macOS** (tested on macOS 12+)
-- **Terminal access** (Terminal.app, iTerm2, Warp, etc.)
-- **Admin privileges** (for installing development tools)
-- **Git** (usually pre-installed; verify with `git --version`)
-
-### Recommended
-- **Nerd Font** for full icon support (automatically installed via setup script)
-- **iTerm2 or modern terminal** for best experience
-
-### Shell Setup
-If you're not already using zsh (default on macOS 10.15+):
-```bash
-# Check current shell
-echo $SHELL
-
-# Switch to zsh if needed (usually not required on modern macOS)
-chsh -s /bin/zsh
-```
-
-## Installation
-
-### Complete Setup (Recommended)
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/ashwch/dotfiles ~/dotfiles
-   cd ~/dotfiles
-   ```
-
-2. Make the setup script executable and run it:
-   ```bash
-   chmod +x setup.sh
-   ./setup.sh
-   ```
-   
-   This single script will:
-   - Install Command Line Tools (if needed)
-   - Install Homebrew (if needed) 
-   - Install all required dependencies
-   - Create symlinks for your dotfiles
-   - Set up development tools
-
-   **Note:** If Command Line Tools aren't installed, the script will prompt you to install them first, then re-run the script.
-
-3. Restart your terminal and enjoy!
-
-## Post-Installation Verification
-
-After installation, verify everything is working correctly:
-
-### 1. Check Your Shell
-```bash
-echo $SHELL
-# Should output: /bin/zsh
-```
-
-### 2. Verify Starship Prompt
-Your terminal should now show a colorful prompt with:
-- Current directory
-- Git branch (when in a git repository)
-- Language versions (Python, Node.js, etc.)
-- Command execution time
-
-### 3. Test Key Aliases
-```bash
-# Git aliases
-gs          # Should run 'git status'
-ga .        # Should run 'git add .'
-
-# Navigation
-ll          # Should show detailed file listing with icons
-z           # Should show zoxide help (smart cd)
-
-# Python (if you have Python projects)
-cd /path/to/python/project
-# Should auto-activate Python environment if pyproject.toml exists
-```
-
-### 4. Check Performance
-```bash
-# Test shell startup time (should be under 100ms)
-time zsh -i -c exit
-```
-
-### 5. Verify Tools Installation
-```bash
-# Check modern CLI tools
-eza --version    # Better ls
-zoxide --version # Smart cd
-fzf --version    # Fuzzy finder
-rg --version     # ripgrep
-```
-
-### Manual Installation
-
-If you already have the dependencies and want to just symlink the dotfiles:
+Run the setup script on a fresh macOS system or a machine you are comfortable configuring:
 
 ```bash
-# Backup existing configs
-cp ~/.zshrc ~/.zshrc.backup
-cp ~/.gitconfig ~/.gitconfig.backup
+git clone https://github.com/ashwch/dotfiles ~/dotfiles
+cd ~/dotfiles
 
-# Create symlinks
-ln -sf ~/dotfiles/.zshrc ~/.zshrc
-ln -sf ~/dotfiles/.gitconfig ~/.gitconfig  
-ln -sf ~/dotfiles/.fzf.zsh ~/.fzf.zsh
-ln -sf ~/dotfiles/.editorconfig ~/.editorconfig
-ln -sf ~/dotfiles/.inputrc ~/.inputrc
-
-# Config directory files
-mkdir -p ~/.config/git
-ln -sf ~/dotfiles/.config/starship.toml ~/.config/starship.toml
-ln -sf ~/dotfiles/.config/git/ignore ~/.config/git/ignore
-
-# Install packages from Brewfile
-brew bundle --file=~/dotfiles/Brewfile
-
-# Reload shell
-source ~/.zshrc
-```
-
-## Key Aliases & Functions
-
-### Navigation
-- `z <dir>` - Smart cd (zoxide)
-- `..`, `...` - Navigate up directories
-- `fcd` - Fuzzy find directory
-
-### Python Development
-- `pyrun` - Smart uv run/uvx
-- `pynew` - Create new Python project
-- `activate` - Activate virtual environment
-
-#### Auto UV Environment
-The shell automatically manages Python environments using [auto-uv-env](https://github.com/ashwch/auto-uv-env):
-- **Detects** Python projects via `pyproject.toml`
-- **Extracts** required Python version from project config
-- **Creates** virtual environments with correct Python version
-- **Activates** on directory entry, **deactivates** on exit
-- **Optimized** for performance (~0ms for non-Python directories)
-
-### Git
-- `gs` - git status
-- `ga` - git add
-- `gc` - git commit
-- `gp` - git push
-- `gconv` - Conventional commits
-
-### Node.js
-- `ni` - npm install
-- `nr` - npm run
-- `nd` - npm run dev
-
-### Utilities
-- `serve` - Quick HTTP server
-- `weather` - Get weather info
-- `backup` - Backup files with timestamp
-- `extract` - Universal archive extractor
-
-### Custom Scripts
-Custom scripts are stored in `bin/` and automatically available:
-- Add your own scripts to `~/dotfiles/bin/` for version control
-
-## Smart Features
-
-### Alias Reminder System
-The configuration includes an intelligent reminder system that suggests shorter aliases when you use longer commands:
-
-```bash
-$ git status
-💡 Tip: You can use 'gs' instead of 'git status'
-```
-
-### Utility Functions
-- `show_aliases` - Display all available aliases
-- `add_alias` - Add new aliases with auto-reminders
-- `validate_aliases` - Check alias functionality
-
-
-## Configuration Structure
-
-- **Environment & Path** - XDG directories, language settings
-- **ZSH Options** - History, completion, navigation settings
-- **Tool Configurations** - Python, Node.js, Git setups
-- **Aliases & Functions** - Productivity shortcuts
-- **Modern Tools** - Integration with CLI utilities
-- **Key Bindings** - Custom keyboard shortcuts
-
-## Utility Scripts
-
-The `scripts/` directory contains helpful maintenance utilities:
-
-- **update-dotfiles** - Updates packages, Brewfile, and pulls latest dotfiles
-  ```bash
-  ./scripts/update-dotfiles
-  ```
-
-## Customization
-
-### Local Configuration
-Add machine-specific settings to:
-- `~/.zshrc.work` - Work-specific configuration (non-secrets)
-
-### Adding New Aliases
-```bash
-add_alias <name> <command>
-```
-
-## Dependencies
-
-### Required Tools
-- **zsh** - Shell
-- **starship** - Prompt
-- **uv** - Python package manager
-
-### Recommended Tools
-- **eza** - Better ls
-- **zoxide** - Smart cd
-- **fzf** - Fuzzy finder
-- **ripgrep** - Fast search
-- **fd** - Better find
-- **bat** - Better cat
-- **ZSH built-in correction** - Command typo correction (setopt CORRECT)
-
-### Installation via Homebrew
-```bash
-brew install eza zoxide fzf ripgrep fd bat starship
-brew install --cask font-fira-code-nerd-font
-```
-
-## Troubleshooting
-
-### Common Issues
-
-#### Setup Script Permission Denied
-```bash
-# If you get permission denied
 chmod +x setup.sh
 ./setup.sh
 ```
 
-#### Command Line Tools Installation Fails
-```bash
-# Manually install Xcode Command Line Tools
-xcode-select --install
-# Then re-run setup
-./setup.sh
-```
+The script:
 
-#### Homebrew Installation Issues
+- Verifies macOS and installs Xcode Command Line Tools (if needed)
+- Installs Homebrew (if needed) and core tools (zsh plugins, UV, modern CLI tools, NVM, etc.)
+- Installs a Nerd Font for icon support
+- Creates timestamped backups of existing config files
+- Symlinks dotfiles into your home directory:
+  - `~/.zshrc`
+  - `~/.gitconfig`
+  - `~/.fzf.zsh`
+  - `~/.editorconfig`
+  - `~/.inputrc`
+  - `~/.config/starship.toml`
+  - `~/.config/git/ignore`
+  - Ghostty config (if present)
+  - Claude Code settings (if present)
+- Installs additional packages from the `Brewfile` (if present)
+
+After the script finishes:
+
 ```bash
-# If brew command not found after installation
-echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-#### Starship Prompt Not Showing
+Optionally create a symlink for the global environment file:
+
 ```bash
-# Check if starship is installed
-starship --version
-
-# If not installed
-brew install starship
-
-# Restart terminal
+ln -sf ~/dotfiles/.zshenv ~/.zshenv
 ```
 
-#### Icons Not Displaying
-- Install a Nerd Font (setup script does this automatically)
-- Configure your terminal to use the Nerd Font
-- For iTerm2: Preferences → Profiles → Text → Font
+### 4.2 Manual Installation
 
-#### Slow Shell Startup
+If you prefer to manage dependencies yourself:
+
 ```bash
-# Check startup time
+git clone https://github.com/ashwch/dotfiles ~/dotfiles
+cd ~/dotfiles
+
+# Backup existing configs
+cp ~/.zshrc     ~/.zshrc.backup     2>/dev/null || true
+cp ~/.zshenv    ~/.zshenv.backup    2>/dev/null || true
+cp ~/.gitconfig ~/.gitconfig.backup 2>/dev/null || true
+
+# Symlink core files
+ln -sf ~/dotfiles/.zshrc     ~/.zshrc
+ln -sf ~/dotfiles/.zshenv    ~/.zshenv
+ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
+ln -sf ~/dotfiles/.fzf.zsh   ~/.fzf.zsh
+ln -sf ~/dotfiles/.editorconfig ~/.editorconfig
+ln -sf ~/dotfiles/.inputrc   ~/.inputrc
+
+# Config directory
+mkdir -p ~/.config/git
+ln -sf ~/dotfiles/.config/starship.toml ~/.config/starship.toml
+ln -sf ~/dotfiles/.config/git/ignore    ~/.config/git/ignore
+
+source ~/.zshrc
+```
+
+Install tools via Homebrew if needed:
+
+```bash
+brew install eza zoxide fzf ripgrep fd bat starship jq yq gh nvm
+brew install --cask font-fira-code-nerd-font
+```
+
+---
+
+## 5. Usage Highlights
+
+### 5.1 Navigation and CLI Tools
+
+- `z <dir>` – jump to frequently used directories (zoxide)
+- `fcd` – fuzzy find and cd into a directory
+- `ll`, `la`, `l` – enhanced directory listings (eza when available)
+- `fvim` – fuzzy-open a file in `$EDITOR`
+
+### 5.2 Python
+
+- `pyrun <command>` – run Python commands in the project environment
+- `pynew <name>` – create a new UV-based Python project
+- `activate` – activate `.venv` in the current directory
+
+### 5.3 Git
+
+- Common aliases:
+  - `gs` – `git status`
+  - `ga` – `git add`
+  - `gc` – `git commit`
+  - `gp` – `git push`
+  - `gpoh` – `git push origin HEAD`
+  - `gmo feature` – `git merge origin/feature`
+- Higher-level helpers:
+  - `gclone <url>`
+  - `gcom "message"`
+  - `gpush "message"`
+
+### 5.4 Secrets (if configured)
+
+- `refresh-secrets` – clear and rebuild the SOPS secrets cache
+
+---
+
+## 6. Configuration Layout
+
+Key files in this repository:
+
+- `.zshenv` – global environment and PATH configuration
+- `.zshrc` – interactive shell configuration
+- `.gitconfig` – Git configuration and aliases
+- `.fzf.zsh` – FZF bindings/completion
+- `.editorconfig` – code style defaults
+- `.inputrc` – readline configuration
+- `.config/starship.toml` – prompt configuration
+- `.config/ghostty/config` – Ghostty terminal configuration (optional)
+- `.claude/` – Claude Code settings (optional)
+- `scripts/` – helper and maintenance scripts
+- `bin/` – custom commands automatically added to `PATH`
+
+You can add machine- or work-specific settings in:
+
+- `~/.zshrc.work` – sourced from `.zshrc` if present
+
+---
+
+## 7. Troubleshooting
+
+**Check shell**
+
+```bash
+echo "$SHELL"
+```
+
+Expected: `/bin/zsh`.
+
+**Measure startup time**
+
+```bash
 time zsh -i -c exit
-
-# If over 200ms, check for conflicting configurations
-mv ~/.zshrc.local ~/.zshrc.local.backup  # If it exists
 ```
 
-#### Python Auto-Environment Not Working
+If startup feels slow, temporarily move any local overrides (for example `~/.zshrc.work`) and retry.
+
+**Verify tools**
+
 ```bash
-# Check if auto-uv-env is installed
-auto-uv-env --version
-
-# Verify pyproject.toml has requires-python
-cat pyproject.toml | grep requires-python
+eza --version
+zoxide --version
+fzf --version
+rg --version
+uv --version
 ```
 
-### Getting Help
+If a tool is missing, install it via Homebrew or re-run `setup.sh`.
 
-1. **Check the alias reminder system**: Type long commands and look for suggestions
-2. **Review available aliases**: Run `show_aliases`
-3. **Check tool versions**: Use `tool --version` for specific tools
-4. **Reset to defaults**: See uninstall instructions below
+---
 
-## Uninstall
+## 8. Uninstall
 
-To remove these dotfiles and restore your previous configuration:
+To revert to your previous configuration:
 
-### 1. Restore Backup Files
+1. Restore backups created by `setup.sh` (directories named `~/dotfiles_backup_YYYYMMDD_HHMMSS`):
+
 ```bash
-# The setup script creates backups with timestamps
-ls ~/dotfiles-backup-*
-
-# Restore from most recent backup
-cp ~/dotfiles-backup-YYYYMMDD-HHMMSS/.zshrc ~/.zshrc
-cp ~/dotfiles-backup-YYYYMMDD-HHMMSS/.gitconfig ~/.gitconfig
-# ... restore other files as needed
+ls ~/dotfiles_backup_*
+# copy back the files you care about, for example:
+cp ~/dotfiles_backup_YYYYMMDD_HHMMSS/.zshrc ~/.zshrc
+cp ~/dotfiles_backup_YYYYMMDD_HHMMSS/.gitconfig ~/.gitconfig
 ```
 
-### 2. Remove Symlinks
+2. Remove symlinks you no longer want:
+
 ```bash
-# Remove dotfile symlinks
-rm ~/.zshrc ~/.gitconfig ~/.fzf.zsh ~/.editorconfig ~/.inputrc
-rm ~/.config/starship.toml ~/.config/git/ignore
-
-# Remove Claude Code settings (if you don't want to keep them)
-rm -rf ~/.claude
+rm -f ~/.zshrc ~/.zshenv ~/.gitconfig ~/.fzf.zsh ~/.editorconfig ~/.inputrc
+rm -f ~/.config/starship.toml ~/.config/git/ignore
 ```
 
-### 3. Remove Tools (Optional)
-```bash
-# Remove Homebrew packages (only if you don't need them for other projects)
-brew uninstall eza zoxide fzf ripgrep fd bat starship uv
-brew uninstall --cask font-fira-code-nerd-font
-```
+3. Optionally remove Claude settings and tools you installed solely for this setup.
 
-### 4. Clean Shell Configuration
-```bash
-# Switch back to default shell if needed
-chsh -s /bin/bash
+---
 
-# Or keep zsh but with minimal configuration
-echo "# Minimal zsh config" > ~/.zshrc
-```
+## 9. License
 
-## License
+MIT License. You are free to use, modify, and adapt these dotfiles for your own environment.
 
-MIT License - Feel free to use and modify as needed.
