@@ -316,7 +316,7 @@ command -v gh >/dev/null 2>&1 && {
 }
 
 # Better process monitor
-command -v btop >/dev/null 2>&1 && alias top="btop"
+# command -v btop >/dev/null 2>&1 && alias top="btop"  # Commented out - use system top
 
 # JSON/YAML processing aliases
 command -v jq >/dev/null 2>&1 && alias jqp="jq -C . | less -R"
@@ -369,8 +369,28 @@ extract() {
     esac
 }
 
-# Find and kill process by name
-killp() { ps aux | grep -v grep | grep "$1" | awk '{print $2}' | xargs kill -9 }
+# Find and kill process by name (safer: show and confirm)
+killp() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: killp <pattern>"
+        return 1
+    fi
+
+    echo "Matching processes for pattern: $1"
+    ps aux | grep -v grep | grep --color=auto "$1" || {
+        echo "No matching processes found."
+        return 1
+    }
+
+    echo
+    echo "Kill these processes with SIGKILL? [y/N]"
+    read -r reply
+    if [[ "$reply" == [Yy] ]]; then
+        ps aux | grep -v grep | grep "$1" | awk '{print $2}' | xargs kill -9
+    else
+        echo "Aborted."
+    fi
+}
 
 # Create and serve a simple HTTP server (removed duplicate)
 
@@ -383,13 +403,29 @@ qr() { curl -s "qrenco.de/$1" }
 # Git file finder (renamed to avoid conflict with git fetch alias)
 gitfind() { git ls-files | grep "$1" }
 
-# Find and replace in files
+# Find and replace in files (with optional dry run)
 findreplace() {
-    if [[ $# -ne 3 ]]; then
-        echo "Usage: findreplace <directory> <search> <replace>"
+    if [[ $# -lt 3 || $# -gt 4 ]]; then
+        echo "Usage: findreplace <directory> <search> <replace> [--dry-run]"
         return 1
     fi
-    find "$1" -type f -exec sed -i '' "s/$2/$3/g" {} +
+    local directory="$1"
+    local search="$2"
+    local replace="$3"
+    local dry_run=false
+
+    if [[ "$4" == "--dry-run" ]]; then
+        dry_run=true
+    fi
+
+    if [[ "$dry_run" == true ]]; then
+        echo "Dry run: files that would be modified under '$directory' containing '$search':"
+        grep -rl -- "$search" "$directory"
+    else
+        # Note: this is a simple wrapper; complex patterns with
+        # slashes or special sed chars may still need manual care.
+        find "$directory" -type f -exec sed -i '' "s/$search/$replace/g" {} +
+    fi
 }
 
 # JSON pretty print from clipboard (macOS)
