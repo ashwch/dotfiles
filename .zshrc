@@ -426,9 +426,11 @@ gconv() {
 # Smart Alias Reminder System
 # =====================================================
 
+# Use zsh's preexec hook mechanism so this plays nicely
+# with other tools that also register preexec handlers.
+autoload -Uz add-zsh-hook
 
-# Hook into the preexec function to check commands before execution
-preexec() {
+alias_tip_preexec() {
     # Get the full command line
     local full_cmd="$1"
     
@@ -467,6 +469,9 @@ preexec() {
         "ls -l") echo "💡 Tip: You can use 'l' instead of 'ls -l'" >&2 ;;
     esac
 }
+
+# Register the alias tip hook with zsh's preexec system
+add-zsh-hook preexec alias_tip_preexec
 
 # Show all available aliases by category
 show_aliases() {
@@ -545,6 +550,41 @@ show_aliases() {
 # Alias Management & Validation Tools
 # =====================================================
 
+# Associative array backing the reminder system:
+# maps a full command string (key) to the short alias
+# you want to be reminded about (value).
+typeset -A ALIAS_REMINDERS
+ALIAS_REMINDERS=(
+    "git status"                         "gs"
+    "git add"                            "ga"
+    "git add --all"                      "gaa"
+    "git commit"                         "gc"
+    "git commit -m"                      "gcm"
+    "git push"                           "gp"
+    "git pull"                           "gpl"
+    "git checkout"                       "gco"
+    "git diff"                           "gd"
+    "git fetch"                          "gf"
+    "git fetch --all"                    "gfa"
+    "git merge origin/release"           "gmor"
+    "git branch"                         "gb"
+    "git log --oneline --graph --decorate" "gl"
+    "npm install"                        "ni"
+    "npm run dev"                        "nd"
+    "npm run build"                      "nb"
+    "npm run"                            "nr"
+    "npm start"                          "ns"
+    "npm test"                           "nt"
+    "docker ps"                          "dps"
+    "docker-compose up"                  "dcu"
+    "docker-compose down"                "dcd"
+    "tmux attach"                        "ta"
+    "tmux list-sessions"                 "tls"
+    "uv run"                             "pyrun"
+    "ls -la"                             "ll"
+    "ls -l"                              "l"
+)
+
 # Check which aliases are missing from reminder system
 check_missing_reminders() {
     echo "🔍 Checking for aliases missing from reminder system..."
@@ -567,10 +607,10 @@ check_missing_reminders() {
     done < ~/.zshrc
     
     if [[ $missing_count -eq 0 ]]; then
-        echo "✅ All aliases are covered by the reminder system!"
+        echo "✅ All aliases are covered by the manual ALIAS_REMINDERS mapping!"
     else
         echo ""
-        echo "💡 Found $missing_count missing reminders. Consider adding them to the manual mappings in generate_alias_reminders()"
+        echo "💡 Found $missing_count missing reminders. Consider adding them to the ALIAS_REMINDERS mapping near the top of this section."
     fi
 }
 
