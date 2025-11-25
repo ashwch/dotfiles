@@ -6,36 +6,12 @@
 [[ $- != *i* ]] && return
 
 # =====================================================
-# Environment Variables & Path
-# =====================================================
-
-# XDG Base Directory
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_CACHE_HOME="$HOME/.cache"
-
-# Language & Locale
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-# Default Programs
-export EDITOR="code"
-export VISUAL="code"
-export BROWSER="open"
-
-# Path configuration
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-
-# Custom scripts from dotfiles
-export PATH="$HOME/dotfiles/bin:$PATH"
-
-# PostgreSQL 17
-export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
-
-# =====================================================
 # ZSH Options & Settings
 # =====================================================
+
+# Global environment (LANG, EDITOR, PATH, etc.) now lives
+# in ~/.zshenv so that non-interactive zsh shells (e.g.
+# `zsh -c` from other tools) see the same setup.
 
 # History settings
 export HISTFILE="$HOME/.zsh_history"
@@ -52,6 +28,11 @@ setopt HIST_BEEP
 setopt SHARE_HISTORY
 setopt EXTENDED_HISTORY
 
+# Safer defaults: fail when any command in a pipeline
+# fails, and avoid clobbering files accidentally.
+set -o pipefail        # Return status from rightmost failing command in a pipeline
+setopt NO_CLOBBER      # Prevent '>' from truncating files; use '>|' to override
+
 # Directory navigation
 setopt AUTO_PUSHD
 setopt PUSHD_IGNORE_DUPS
@@ -66,6 +47,13 @@ setopt ALWAYS_TO_END
 setopt CORRECT
 setopt GLOBDOTS
 setopt NO_BEEP
+
+# Optional startup profiling: set ZSH_PROFILE=1 before
+# starting a shell to enable zprof, then run `zprof`
+# after startup to see where time is spent.
+if [[ -n "$ZSH_PROFILE" ]]; then
+    zmodload zsh/zprof
+fi
 
 # =====================================================
 # Completion System
