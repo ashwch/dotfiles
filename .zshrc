@@ -786,9 +786,10 @@ eval "$(starship init zsh)"
 # =====================================================
 
 # SOPS Secrets Management
-# Provides automatic loading of encrypted secrets with performance caching
+# Provides automatic loading of encrypted secrets with performance caching.
+# Cache file lives in the XDG cache dir instead of /tmp.
 # Cache TTL: 5 minutes (configurable via SECRETS_CACHE_TTL)
-SECRETS_CACHE="/tmp/.sops_cache_${UID}"
+SECRETS_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/sops_env_${UID}.cache"
 SECRETS_CACHE_TTL=300
 
 # Load encrypted secrets from SOPS with intelligent caching
@@ -847,35 +848,77 @@ fi
 # FZF Configuration (Load Last)
 # =====================================================
 
-# FZF setup - load key bindings and completion
+# FZF setup - load key bindings and completion if installed
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # FZF configuration
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+# Prefer fd/bat when available, but fall back to POSIX tools
+# so this still works on minimal systems.
+if command -v fd >/dev/null 2>&1; then
+    export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+    export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+else
+    export FZF_DEFAULT_COMMAND='find . -type f'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+    export FZF_ALT_C_COMMAND='find . -type d'
+fi
 
-export FZF_DEFAULT_OPTS='
-    --height 40%
-    --layout=reverse
-    --border
-    --multi
-    --preview "bat --style=numbers --color=always --line-range :500 {}"
-    --color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
-    --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9
-    --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6
-    --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4'
+if command -v bat >/dev/null 2>&1; then
+    export FZF_DEFAULT_OPTS='
+        --height 40%
+        --layout=reverse
+        --border
+        --multi
+        --preview "bat --style=numbers --color=always --line-range :500 {}"
+        --color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
+        --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9
+        --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6
+        --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4'
+else
+    export FZF_DEFAULT_OPTS='
+        --height 40%
+        --layout=reverse
+        --border
+        --multi
+        --preview "cat {}"
+        --color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
+        --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9
+        --color=info:#ffb86c,prompt:#50fa7b,pointer:#50fa7b
+        --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4'
+fi
 
 # FZF utility functions
-fcd() { cd "$(fd --type d | fzf)" }
+fcd() {
+    local dir
+    if command -v fd >/dev/null 2>&1; then
+        dir=$(fd --type d | fzf)
+    else
+        dir=$(find . -type d 2>/dev/null | fzf)
+    fi
+    [[ -n "$dir" ]] && cd "$dir"
+}
+
 fvim() { $EDITOR "$(fzf)" }
-fkill() { ps aux | fzf | awk '{print $2}' | xargs kill -9 }
+
+fkill() {
+    # Choose a process interactively and kill its PID
+    local pid
+    pid=$(ps aux | fzf | awk '{print $2}')
+    [[ -n "$pid" ]] && kill -9 "$pid"
+}
 
 # =====================================================
-# WeasyPrint Library Path Fix
+# WeasyPrint / tooling notes
 # =====================================================
 
-# Fix for WeasyPrint with UV's isolated Python environment
-export DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_FALLBACK_LIBRARY_PATH"
+# WeasyPrint and other tools that rely on Homebrew libraries
+# now pick up /opt/homebrew/lib via DYLD_FALLBACK_LIBRARY_PATH
+# set globally in ~/.zshenv, so we don't need to repeat it here.
 
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
+# Lazy load asdf to improve startup time
+asdf() {
+    unfunction asdf
+    . /opt/homebrew/opt/asdf/libexec/asdf.sh
+    asdf "$@"
+}
