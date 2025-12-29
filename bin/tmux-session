@@ -17,11 +17,16 @@ get_sessions() {
 build_list() {
     echo "[+] Create new session"
     get_sessions | while read -r session; do
-        # Get window count and current path for context
-        info=$($TMUX list-windows -t "$session" -F "#{window_name}" 2>/dev/null | head -1)
-        echo "$session ($info)"
+        # Get the current path of the active pane in this session
+        pane_path=$($TMUX display-message -t "$session" -p "#{pane_current_path}" 2>/dev/null)
+        # Shorten home directory to ~
+        pane_path="${pane_path/#$HOME/~}"
+        echo "$session  │  $pane_path"
     done
 }
+
+# Shorten current directory for display
+current_dir="${PWD/#$HOME/~}"
 
 # Prompt user with fzf
 selection=$(build_list | $FZF \
@@ -29,7 +34,8 @@ selection=$(build_list | $FZF \
     --layout=reverse \
     --border=rounded \
     --prompt="tmux session > " \
-    --header="Select session or create new" \
+    --header="Current: $current_dir
+Select session or type new name" \
     --print-query \
     --bind="enter:accept" \
     --expect=enter)
@@ -44,23 +50,25 @@ if [[ -z "$choice" && -z "$query" ]]; then
     # User cancelled - start default session
     exec $TMUX new-session -A -s "main"
 elif [[ "$choice" == "[+] Create new session" || -z "$choice" ]]; then
-    # Create new session with query as name (or prompt if empty)
+    # Create new session with query as name (or generate unique name)
     if [[ -n "$query" ]]; then
         session_name="$query"
     else
-        # Default to directory-based name
+        # Generate unique name: basename + short hash of full path
         if [[ "$PWD" == "$HOME" ]]; then
             session_name="main"
         else
-            session_name=$(basename "$PWD")
+            base=$(basename "$PWD")
+            hash=$(echo -n "$PWD" | md5 | cut -c1-6)
+            session_name="${base}-${hash}"
         fi
     fi
-    # Sanitize
+    # Sanitize: tmux session names can't have dots or colons
     session_name="${session_name//./-}"
     session_name="${session_name//:/-}"
     exec $TMUX new-session -A -s "$session_name"
 else
-    # Attach to existing session (extract name before the parenthesis)
-    session_name=$(echo "$choice" | sed 's/ (.*//')
+    # Attach to existing session (extract name before the separator)
+    session_name=$(echo "$choice" | sed 's/  │.*//')
     exec $TMUX attach-session -t "=$session_name"
 fi
