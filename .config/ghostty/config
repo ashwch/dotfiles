@@ -1,91 +1,116 @@
-# This is the configuration file for Ghostty.
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║                                                                          ║
+# ║   Ghostty Configuration                                                  ║
+# ║   Hybrid Ghostty + tmux setup                                            ║
+# ║                                                                          ║
+# ║   https://github.com/ashwch/dotfiles                                     ║
+# ║                                                                          ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
 #
-# This template file has been automatically created at the following
-# path since Ghostty couldn't find any existing config files on your system:
+# This configuration integrates Ghostty with tmux for a hybrid terminal setup:
+#   - Ghostty handles tabs and windows (native macOS experience)
+#   - tmux handles panes within each tab (session persistence)
 #
-#   /Users/monty/Library/Application Support/com.mitchellh.ghostty/config
+# Keyboard shortcuts match Ghostty's native behavior, but are routed to tmux.
 #
-# The template does not set any default options, since Ghostty ships
-# with sensible defaults for all options. Users should only need to set
-# options that they want to change from the default.
+# Documentation: https://ghostty.org/docs/config
+# Show defaults: ghostty +show-config --default --docs
 #
-# Run `ghostty +show-config --default --docs` to view a list of
-# all available config options and their default values.
-#
-# Additionally, each config option is also explained in detail
-# on Ghostty's website, at https://ghostty.org/docs/config.
+# ─────────────────────────────────────────────────────────────────────────────
 
-# Config syntax crash course
-# ==========================
-# # The config file consists of simple key-value pairs,
-# # separated by equals signs.
-# font-family = Iosevka
-# window-padding-x = 2
-#
-# # Spacing around the equals sign does not matter.
-# # All of these are identical:
-# key=value
-# key= value
-# key =value
-# key = value
-#
-# # Any line beginning with a # is a comment. It's not possible to put
-# # a comment after a config option, since it would be interpreted as a
-# # part of the value. For example, this will have a value of "#123abc":
-# background = #123abc
-#
-# # Empty values are used to reset config keys to default.
-# key =
-#
-# # Some config options have unique syntaxes for their value,
-# # which is explained in the docs for that config option.
-# # Just for example:
-# resize-overlay-duration = 4s 200ms
-# Toggle the Quick Terminal from anywhere (system-wide)
-keybind = global:cmd+shift+1=toggle_quick_terminal
 
-# Tweak the overlay behavior (macOS-only)
-# Position options: top, bottom, left, right, center
+# ┌──────────────────────────────────────────────────────────────────────────┐
+# │ Shell & Command                                                          │
+# └──────────────────────────────────────────────────────────────────────────┘
+
+# Launch tmux session picker on new tab/window
+# The script shows existing sessions via fzf and creates new ones intelligently
+# Note: ~ expands to $HOME in Ghostty
+command = ~/dotfiles/bin/tmux-session
+
+
+# ┌──────────────────────────────────────────────────────────────────────────┐
+# │ Quick Terminal (Drop-down terminal)                                      │
+# └──────────────────────────────────────────────────────────────────────────┘
+
+# Toggle with Cmd+Shift+1 from anywhere (system-wide hotkey)
+keybind = global:super+shift+1=toggle_quick_terminal
+
+# Appearance
 quick-terminal-position = top
-# Screen options: main, mouse, macos-menu-bar  
 quick-terminal-screen = mouse
-# Keep open when it loses focus
-quick-terminal-autohide = false
-# Space behavior options: move, remain
-quick-terminal-space-behavior = move
 quick-terminal-animation-duration = 0.15
 
-keybind = shift+enter=text:\n
+# Behavior
+quick-terminal-autohide = false
+quick-terminal-space-behavior = move
 
-# Auto-start tmux with smart session naming
-# - In home dir: attaches to "main" session
-# - In project dir: session named after directory
-command = /Users/monty/dotfiles/bin/tmux-session
 
-# ==============================================================================
-# tmux Integration - Ghostty-style shortcuts for tmux panes
-# ==============================================================================
-# Override Ghostty's native pane shortcuts to send escape sequences to tmux.
-# This makes tmux panes feel exactly like Ghostty native panes.
+# ┌──────────────────────────────────────────────────────────────────────────┐
+# │ tmux Integration                                                         │
+# │                                                                          │
+# │ These keybindings send escape sequences to tmux, making tmux panes feel  │
+# │ exactly like Ghostty native panes. The same shortcuts you'd use in       │
+# │ Ghostty without tmux now control tmux panes.                             │
+# │                                                                          │
+# │ How it works:                                                            │
+# │   1. You press Cmd+D in Ghostty                                          │
+# │   2. Ghostty sends escape sequence \x1b[1;2P to the terminal             │
+# │   3. tmux recognizes this as User0 key (configured in .tmux.conf)        │
+# │   4. tmux executes split-window                                          │
+# └──────────────────────────────────────────────────────────────────────────┘
 
-# Pane splitting (Ghostty native: Cmd+D, Cmd+Shift+D)
+# Pane Splitting
+# Cmd+D: Split right (vertical divider)
+# Cmd+Shift+D: Split down (horizontal divider)
 keybind = super+d=text:\x1b[1;2P
 keybind = super+shift+d=text:\x1b[1;2Q
 
-# Pane navigation (Ghostty native: Cmd+Option+Arrow)
+# Pane Navigation (Cmd+Option+Arrow)
 keybind = super+alt+arrow_left=text:\x1b[1;2R
 keybind = super+alt+arrow_right=text:\x1b[1;2S
 keybind = super+alt+arrow_up=text:\x1b[1;6P
 keybind = super+alt+arrow_down=text:\x1b[1;6Q
 
-# Pane resizing (Ghostty native: Cmd+Ctrl+Arrow)
+# Pane Resizing (Cmd+Ctrl+Arrow)
 keybind = super+ctrl+arrow_left=text:\x1b[1;7P
 keybind = super+ctrl+arrow_right=text:\x1b[1;7Q
 keybind = super+ctrl+arrow_up=text:\x1b[1;7R
 keybind = super+ctrl+arrow_down=text:\x1b[1;7S
 
-# Close pane (Ghostty native: Cmd+W)
+# Close Pane (Cmd+W)
 keybind = super+w=text:\x1b[1;6R
 
-# Zoom/maximize pane toggle (Ghostty native: Cmd+Shift+Enter)
+# Toggle Pane Zoom (Cmd+Shift+Enter)
 keybind = super+shift+enter=text:\x1b[1;6S
+
+
+# ┌──────────────────────────────────────────────────────────────────────────┐
+# │ Miscellaneous Keybindings                                                │
+# └──────────────────────────────────────────────────────────────────────────┘
+
+# Shift+Enter sends literal newline (useful in some REPLs)
+keybind = shift+enter=text:\n
+
+
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║ Quick Reference                                                          ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+#
+# TABS & WINDOWS (Ghostty native):
+#   Cmd+T               New tab
+#   Cmd+N               New window
+#   Cmd+1-9             Switch to tab
+#   Cmd+Shift+[/]       Previous/next tab
+#
+# PANES (routed to tmux):
+#   Cmd+D               Split right
+#   Cmd+Shift+D         Split down
+#   Cmd+Option+Arrow    Navigate panes
+#   Cmd+Ctrl+Arrow      Resize panes
+#   Cmd+W               Close pane
+#   Cmd+Shift+Enter     Toggle zoom
+#
+# QUICK TERMINAL:
+#   Cmd+Shift+1         Toggle (system-wide)
+#

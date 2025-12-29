@@ -1,341 +1,136 @@
-# AGENTS.md - Development Context & Guidelines
+# AGENTS.md
 
-This file provides essential context for AI coding assistants (Claude Code, Cursor, Copilot, etc.) when working with this dotfiles repository.
+> Context for AI coding assistants (Claude Code, Cursor, Copilot, etc.)
 
-## Project Overview
+## Overview
 
-This is a **comprehensive macOS development environment** setup using modern dotfiles patterns. The goal is to provide a fast, productive, and consistent development experience across different machines.
+macOS development environment with a **hybrid Ghostty + tmux** terminal setup. Fast shell startup (~50ms), modern CLI tools, keyboard-driven workflows.
 
-## Key Technologies & Tools
+## Architecture
 
-### Terminal: Ghostty + tmux Hybrid
+### Hybrid Terminal (Ghostty + tmux)
 
-The terminal setup uses a **hybrid approach** combining Ghostty and tmux:
+```
+Ghostty (tabs/windows) → tmux (panes/sessions) → Shell
+```
 
-- **Ghostty** handles tabs and windows (native macOS feel, GPU-accelerated)
-- **tmux** handles panes within each tab (session persistence, survives crashes)
+- **Ghostty**: Native macOS tabs, GPU-accelerated rendering
+- **tmux**: Pane management, session persistence (survives crashes)
+- **Shortcuts**: Cmd+D, Cmd+W etc. work like Ghostty native, but control tmux
 
 **Key files:**
-- `.config/ghostty/config` - Ghostty configuration with tmux keybindings
-- `.tmux.conf` - tmux configuration with Gruvbox theme
-- `bin/tmux-session` - Smart session launcher with fzf integration
+| File | Purpose |
+|------|---------|
+| `.config/ghostty/config` | Terminal config, escape sequences to tmux |
+| `.tmux.conf` | Pane bindings, Gruvbox theme, user-keys |
+| `bin/tmux-session` | Smart session launcher with fzf |
 
-**How it works:**
-1. New Ghostty tab runs `bin/tmux-session`
-2. fzf picker shows existing sessions + directory picker
-3. User selects session to attach, or creates new one
-4. Sessions named by directory with unique hash suffix for worktree support
+**How session picker works:**
+1. New Ghostty tab → runs `bin/tmux-session`
+2. fzf shows existing sessions + working directories
+3. Select session, type new name, or Ctrl-f for zoxide directory picker
+4. Sessions named `dirname-hash` (hash for worktree uniqueness)
 
-**Keyboard shortcuts (configured to match Ghostty native):**
-| Shortcut | Action |
-|----------|--------|
-| `Cmd+D` | Split pane right |
-| `Cmd+Shift+D` | Split pane down |
-| `Cmd+Option+Arrow` | Navigate panes |
-| `Cmd+Ctrl+Arrow` | Resize panes |
-| `Cmd+W` | Close pane |
-| `Cmd+Shift+Enter` | Toggle zoom |
-| `Ctrl-a Ctrl-a` | Last pane (double-tap) |
-| `Ctrl-a d` | Detach session |
+### Shell & Tools
 
-### Core Shell Configuration
-- **ZSH** with performance optimizations (~50ms startup time)
-- **Starship prompt** with Gruvbox theme and comprehensive language indicators
-- **FZF integration** for fuzzy finding and enhanced shell interactions
+| Category | Tools |
+|----------|-------|
+| Shell | ZSH (~50ms startup), Starship prompt (Gruvbox) |
+| Python | UV, auto-uv-env (auto-activates venv from pyproject.toml) |
+| Node.js | Lazy-loaded NVM |
+| CLI | eza, zoxide, ripgrep, fd, bat, fzf |
+| Secrets | SOPS + age (encrypted, cached 5min) |
 
-### Development Tools
-- **UV** for Python package management (modern, fast replacement for pip/pipenv)
-- **NVM** for Node.js version management (lazy-loaded for performance)
-- **Homebrew** for macOS package management with Brewfile for reproducibility
+### Performance Targets
 
-### Modern CLI Replacements
-- **eza** instead of ls (better output, icons, git integration)
-- **zoxide** instead of cd (smart directory jumping with frecency)
-- **ripgrep** instead of grep (faster, better defaults)
-- **bat** instead of cat (syntax highlighting, git integration)
-- **fd** instead of find (faster, intuitive syntax)
+| Metric | Target | Current |
+|--------|--------|---------|
+| Shell startup | < 60ms | ~50ms |
+| Cold cache startup | < 100ms | ~95ms |
+| Secrets overhead | < 10ms | 5-7ms |
 
-### Code Quality & Consistency
-- **EditorConfig** for consistent coding styles across editors
-- **Enhanced readline** via .inputrc for better shell input handling
-- **Global Git ignore** patterns for common development artifacts
+### Design Principles
 
-### Custom Scripts Management
-- **Version controlled scripts** in `bin/` directory
-- **Automatic PATH inclusion** - Scripts available globally
-- **Team shareable** - Custom tools across all team members
-- **Setup integration** - Scripts made executable automatically
+1. **Lazy loading** — NVM, completions loaded on-demand
+2. **Conditional config** — Tools only configured if installed
+3. **No frameworks** — No Oh-My-Zsh, minimal plugins
+4. **Symlink-based** — Easy updates, timestamped backups
 
-### Claude Code Integration
-- **Complete settings management** - Both main and local Claude Code settings
-- **Hooks configuration** - Notification hooks and custom scripts integration
-- **Permissions management** - Version controlled tool permissions
-- **Team consistency** - Shared Claude configuration across developers
-- **Setup automation** - All Claude settings automatically configured
-- **Safe sharing** - Only configuration and permissions, no sensitive data
-
-## Architecture Decisions
-
-### Performance Priorities
-1. **Sub-60ms shell startup** - Currently achieving ~50ms with encrypted secrets
-2. **Smart caching** - SOPS secrets cached for 5 minutes (5-7ms overhead)
-3. **Lazy loading** - NVM, completions, and heavy tools loaded on-demand
-4. **Conditional loading** - Tools only configured if installed
-5. **Minimal plugin approach** - No heavy frameworks like Oh-My-Zsh
-
-### Organization Strategy
-- **Single setup script** - Eliminated confusion of multiple installation scripts
-- **Comprehensive automation** - From dependencies to configuration
-- **Symlink-based** - Easy to update and maintain
-- **Backup-safe** - Always creates timestamped backups
-
-## File Structure & Purpose
+## File Structure
 
 ```
 dotfiles/
-├── .zshrc                    # Main shell configuration
-├── .zshenv                   # Global environment and PATH
-├── .tmux.conf                # tmux configuration with Ghostty integration
-├── .gitconfig                # Git global settings
-├── .fzf.zsh                  # Fuzzy finder configuration
-├── .editorconfig             # Cross-editor coding standards
-├── .inputrc                  # Enhanced readline behavior
-├── .secrets.yaml             # Encrypted secrets (SOPS + age)
-├── .sops.yaml                # SOPS configuration
+├── .zshrc                    # Shell config (aliases, functions, tools)
+├── .tmux.conf                # tmux + Ghostty integration
+├── .gitconfig                # Git settings
 ├── bin/
-│   └── tmux-session          # Smart tmux session launcher for Ghostty
-├── .claude/                  # Claude Code settings
-│   ├── settings.json         # Claude hooks and main configuration
-│   └── settings.local.json   # Claude permissions and local settings
+│   └── tmux-session          # Session launcher (fzf + zoxide)
 ├── .config/
-│   ├── starship.toml         # Prompt configuration with Gruvbox theme
-│   ├── ghostty/config        # Ghostty terminal + tmux keybindings
-│   └── git/ignore            # Global gitignore patterns
-├── scripts/
-│   └── update-dotfiles       # Maintenance automation
-├── Brewfile                  # Reproducible package management
-├── setup.sh                  # Complete environment setup
-├── README.md                 # User documentation
-└── AGENTS.md                 # This file - AI assistant context
+│   ├── ghostty/config        # Terminal + escape sequences
+│   └── starship.toml         # Prompt theme
+├── .claude/                  # Claude Code settings
+├── Brewfile                  # Dependencies
+├── setup.sh                  # One-command install
+└── AGENTS.md                 # This file
 ```
 
-## Development Patterns & Preferences
+## Development Patterns
 
-### Shell Configuration Approach
-- **Extensive aliases** (100+ shortcuts) with smart reminder system
-- **Function-based utilities** for complex operations
-- **Conditional tool integration** - graceful degradation if tools missing
-- **Clear sectioning** with comments for maintainability
+### Python (UV + auto-uv-env)
 
-### Git Workflow Preferences
-- **Conventional commits** with helper functions
-- **Comprehensive aliases** for common operations
-- **Global ignore patterns** for IDE files, OS artifacts, etc.
+Auto-activates venv on `cd` into Python projects:
 
-### Python Development Setup
-- **UV-first approach** - Modern, fast package management
-- **Automatic environment activation** - Uses [auto-uv-env](https://github.com/ashwch/auto-uv-env) tool to read `requires-python` from `pyproject.toml` and auto-creates/activates venv
-- **Virtual environment automation** - Easy project setup
-- **Alias shortcuts** for common operations (pyrun, pynew, etc.)
-
-#### Auto UV Environment System
-The dotfiles integrate with [auto-uv-env](https://github.com/ashwch/auto-uv-env), an intelligent Python environment management tool that:
-
-**Features:**
-- **Auto-detection**: Scans for `pyproject.toml` on directory change
-- **Version parsing**: Extracts Python requirements from project config
-- **Smart activation**: Only creates/activates when needed
-- **Team consistency**: Same Python version across all developers
-- **Pre-commit compatibility**: Ensures correct Python for hooks
-
-**Performance:**
-- **Non-Python dirs**: ~0ms (immediate return)
-- **Existing venv**: ~5-10ms (file checks + activation)
-- **New setup**: 1-5 seconds (one-time UV operations)
-- **Memory**: Minimal overhead (standalone tool)
-
-**Supported pyproject.toml patterns:**
-```toml
-[project]
-requires-python = ">=3.11"        # Will use 3.11
-requires-python = ">=3.11,<3.13"  # Will use 3.11
-python_requires = ">=3.11.5"      # Will use 3.11.5
-```
-
-**Workflow Examples:**
-
-*First time entering a Python project:*
-```bash
-cd /path/to/python-project/
-# 🐍 Setting up Python 3.11.5 environment with UV...
-# Python 3.11.5 already available
-# ✅ Virtual environment created
-# 🚀 Activated Python environment (Python 3.11.5)
-
-pre-commit run --all-files  # Uses correct Python version
-```
-
-*Subsequent visits (fast path):*
 ```bash
 cd /path/to/python-project/
 # 🚀 Activated Python environment (Python 3.11.5)
 ```
 
-*Leaving a Python project:*
+Reads `requires-python` from `pyproject.toml`. First visit creates venv (~1-5s), subsequent visits ~5-10ms.
+
+**Environment variables:**
+- `AUTO_UV_ENV_QUIET=1` — Suppress output
+- `AUTO_UV_ENV_DEBUG=1` — Debug logging
+
+### Node.js (Lazy NVM)
+
+NVM loads on first use to avoid startup penalty. Aliases: `nr` (npm run), `nd` (npm run dev).
+
+### Git
+
+Conventional commits. Common aliases: `gs` (status), `gp` (push), `gpoh` (push origin HEAD), `gmo` (merge origin).
+
+## Common Commands
+
 ```bash
-cd /some/other/directory/
-# ⬇️  Deactivated Python environment
-```
+# Performance testing
+time zsh -i -c exit
 
-**Troubleshooting:**
-- **Silent mode**: Set `export AUTO_UV_ENV_QUIET=1` to suppress output
-- **Debug mode**: Set `export AUTO_UV_ENV_DEBUG=1` for detailed logging
-- **Skip auto-activation**: Create `.auto-uv-env-ignore` file in project root
-- **Performance issues**: The tool exits early for non-Python directories
-
-### Node.js Development Setup
-- **Multi-package manager support** - npm, yarn, pnpm aliases
-- **Lazy NVM loading** - Performance over convenience
-- **Common development shortcuts** - nr (npm run), nd (npm run dev), etc.
-
-## Maintenance Guidelines
-
-### When Adding New Tools
-1. **Performance check** - Measure impact on shell startup time
-2. **Conditional loading** - Check if tool exists before configuration
-3. **Alias integration** - Add to reminder system if creating shortcuts
-4. **Documentation** - Update README with new features
-
-### Update Workflow
-1. Use `./scripts/update-dotfiles` for routine maintenance
-2. Update Brewfile when adding new packages
-3. Test startup time after major changes
-4. Commit changes with descriptive messages
-
-### Testing New Configurations
-- Test on fresh shell sessions to verify startup time
-- Verify all aliases and functions work correctly
-- Check that missing tools don't break the configuration
-- Ensure backups are created properly
-
-## Common Tasks & Commands
-
-### Adding New Packages
-```bash
+# Add package and update Brewfile
 brew install <package>
-brew bundle dump --force --file=Brewfile  # Update Brewfile
-```
+brew bundle dump --force --file=Brewfile
 
-### Performance Testing
-```bash
-time zsh -i -c exit  # Measure startup time
-```
+# tmux sessions
+tmux ls                          # List sessions
+tmux attach -t <name>            # Attach
+tmux kill-session -t <name>      # Kill
 
-### Updating Everything
-```bash
+# Update dotfiles
 ./scripts/update-dotfiles
 ```
 
-### Adding New Aliases
-```bash
-add_alias <name> <command>  # Automatically includes in reminder system
-```
+## Maintenance
 
-### Managing Custom Scripts
-```bash
-# Add a new script to dotfiles
-cp /usr/local/bin/my_script.sh ~/dotfiles/bin/
-chmod +x ~/dotfiles/bin/my_script.sh
+When adding new tools:
+1. Measure startup impact: `time zsh -i -c exit`
+2. Use conditional loading: `command -v tool &>/dev/null && ...`
+3. Update Brewfile if installed via Homebrew
+4. Test that missing tools don't break config
 
-# Scripts are automatically in PATH after reload
-source ~/.zshrc
-my_script.sh  # Available globally
+## Troubleshooting
 
-# For team sharing - commit the script
-git add bin/my_script.sh
-git commit -m "Add my_script.sh utility"
-```
-
-### Managing Claude Code Settings
-```bash
-# Update Claude settings in dotfiles
-cp ~/.claude/settings.json ~/dotfiles/.claude/
-cp ~/.claude/settings.local.json ~/dotfiles/.claude/
-
-# Commit changes for team sharing
-git add .claude/
-git commit -m "Update Claude Code configuration and permissions"
-
-# Settings automatically apply on new machines via setup.sh
-# - settings.json: hooks, notifications, main config
-# - settings.local.json: permissions, local preferences
-```
-
-### tmux Session Management
-```bash
-# List all tmux sessions
-tmux ls
-
-# Attach to a specific session
-tmux attach -t session-name
-
-# Kill a session
-tmux kill-session -t session-name
-
-# Rename current session (inside tmux)
-Ctrl-a $
-
-# The tmux-session script handles:
-# - Interactive session picker on new Ghostty tab
-# - Directory-based session naming with hash suffix
-# - zoxide integration for directory selection
-# - Automatic session reattachment
-```
-
-## Integration Points
-
-### Terminal Workflow (Ghostty + tmux)
-- **Session persistence**: Work survives terminal crashes and system restarts
-- **Project-based sessions**: Each project directory gets its own tmux session
-- **Native shortcuts**: Cmd+D, Cmd+W etc. work exactly like Ghostty native
-- **Directory picker**: Ctrl-f in session picker to browse zoxide history
-
-### Claude Code Workflows
-- **Lint commands**: The .zshrc includes references to running lint/typecheck
-- **Git integration**: Comprehensive git aliases and functions
-- **Development shortcuts**: Language-specific aliases and utilities
-- **Project navigation**: zoxide and fzf for quick directory switching
-
-### IDE/Editor Integration
-- **EditorConfig** provides consistent formatting across all editors
-- **Global git ignore** prevents IDE files from being committed
-- **Shell integration** works with VS Code, terminal emulators
-- **tmux compatibility** - Editor plugins can detect tmux sessions
-
-## Troubleshooting Common Issues
-
-### Slow Startup Times
-- Check for new tool integrations without lazy loading
-- Profile with `zsh -x` to identify bottlenecks
-- Consider adding conditional loading for new tools
-
-### Missing Tool Errors
-- Verify Brewfile includes all required packages
-- Check conditional loading logic in .zshrc
-- Run setup.sh to ensure all dependencies installed
-
-### Broken Symlinks
-- Use the backup directory created during installation
-- Re-run setup.sh to recreate symlinks
-- Check file permissions and paths
-
-## Performance Targets
-
-- **Shell startup**: < 60ms (current: ~50ms with secrets)
-- **First shell (cold cache)**: < 100ms (current: ~95ms)
-- **Secrets loading overhead**: < 10ms (achieved: 5-7ms)
-- **Command completion**: < 100ms for common completions
-- **Directory switching**: Instant with zoxide
-- **Git operations**: Fast with comprehensive aliases
-
-This dotfiles setup represents a balance between comprehensive functionality and performance optimization, suitable for professional development work across multiple projects and environments.
+| Issue | Solution |
+|-------|----------|
+| Slow startup | Profile with `zsh -x`, check lazy loading |
+| Missing tool errors | Run `setup.sh`, check Brewfile |
+| Broken symlinks | Re-run `setup.sh` (creates backups) |
+| tmux not found | Check `/opt/homebrew/bin/tmux` exists |
