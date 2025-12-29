@@ -84,6 +84,16 @@ Pane shortcuts match Ghostty native, but control tmux:
 
 Tabs and windows use Ghostty native shortcuts (`Cmd+T`, `Cmd+N`, `Cmd+1-9`).
 
+### Plugins
+
+| Shortcut | Plugin | Action |
+|----------|--------|--------|
+| `Ctrl-a Ctrl-s` | resurrect | Save session (survives reboot) |
+| `Ctrl-a Ctrl-r` | resurrect | Restore session |
+| `Ctrl-a Tab` | extrakto | Copy any visible text with fzf |
+| `Ctrl-a Space` | thumbs | Copy with quick hints |
+| — | continuum | Auto-saves every 15 min |
+
 ---
 
 ## What's Included

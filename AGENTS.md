@@ -31,6 +31,14 @@ Ghostty (tabs/windows) → tmux (panes/sessions) → Shell
 3. Select session, type new name, or Ctrl-f for zoxide directory picker
 4. Sessions named `dirname-hash` (hash for worktree uniqueness)
 
+**tmux plugins (via TPM):**
+| Plugin | Purpose | Shortcut |
+|--------|---------|----------|
+| resurrect | Save/restore sessions across reboots | `Ctrl-a Ctrl-s/r` |
+| continuum | Auto-save every 15 min | — |
+| extrakto | Copy visible text with fzf | `Ctrl-a Tab` |
+| thumbs | Copy with quick hints | `Ctrl-a Space` |
+
 ### Shell & Tools
 
 | Category | Tools |
@@ -53,7 +61,7 @@ Ghostty (tabs/windows) → tmux (panes/sessions) → Shell
 
 1. **Lazy loading** — NVM, completions loaded on-demand
 2. **Conditional config** — Tools only configured if installed
-3. **No frameworks** — No Oh-My-Zsh, minimal plugins
+3. **Minimal frameworks** — No Oh-My-Zsh, only essential tmux plugins
 4. **Symlink-based** — Easy updates, timestamped backups
 
 ## File Structure
