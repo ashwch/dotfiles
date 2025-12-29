@@ -111,6 +111,7 @@ backup_and_link "$DOTFILES_DIR/.gitconfig"  "$HOME/.gitconfig"
 backup_and_link "$DOTFILES_DIR/.fzf.zsh"    "$HOME/.fzf.zsh"
 backup_and_link "$DOTFILES_DIR/.editorconfig" "$HOME/.editorconfig"
 backup_and_link "$DOTFILES_DIR/.inputrc"    "$HOME/.inputrc"
+backup_and_link "$DOTFILES_DIR/.tmux.conf"  "$HOME/.tmux.conf"
 
 # Install config directory files
 mkdir -p "$HOME/.config/git"

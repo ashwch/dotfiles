@@ -56,3 +56,25 @@ quick-terminal-space-behavior = move
 quick-terminal-animation-duration = 0.15
 
 keybind = shift+enter=text:\n
+
+# ==============================================================================
+# tmux Integration - Ghostty-style shortcuts for tmux panes
+# ==============================================================================
+# These send escape sequences that tmux interprets as pane commands
+# Only active inside tmux - Ghostty's native splits still work outside tmux
+
+# Pane splitting (matches Ghostty native shortcuts)
+keybind = cmd+d=text:\x1b[1;2P
+keybind = cmd+shift+d=text:\x1b[1;2Q
+
+# Pane navigation with Cmd+Arrow keys
+keybind = cmd+left=text:\x1b[1;2R
+keybind = cmd+right=text:\x1b[1;2S
+keybind = cmd+up=text:\x1b[1;6P
+keybind = cmd+down=text:\x1b[1;6Q
+
+# Close pane
+keybind = cmd+w=text:\x1b[1;6R
+
+# Zoom/maximize pane toggle
+keybind = cmd+shift+enter=text:\x1b[1;6S
