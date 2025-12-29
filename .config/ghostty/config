@@ -60,21 +60,27 @@ keybind = shift+enter=text:\n
 # ==============================================================================
 # tmux Integration - Ghostty-style shortcuts for tmux panes
 # ==============================================================================
-# These send escape sequences that tmux interprets as pane commands
-# Only active inside tmux - Ghostty's native splits still work outside tmux
+# Override Ghostty's native pane shortcuts to send escape sequences to tmux.
+# This makes tmux panes feel exactly like Ghostty native panes.
 
-# Pane splitting (matches Ghostty native shortcuts)
-keybind = cmd+d=text:\x1b[1;2P
-keybind = cmd+shift+d=text:\x1b[1;2Q
+# Pane splitting (Ghostty native: Cmd+D, Cmd+Shift+D)
+keybind = super+d=text:\x1b[1;2P
+keybind = super+shift+d=text:\x1b[1;2Q
 
-# Pane navigation with Cmd+Arrow keys
-keybind = cmd+left=text:\x1b[1;2R
-keybind = cmd+right=text:\x1b[1;2S
-keybind = cmd+up=text:\x1b[1;6P
-keybind = cmd+down=text:\x1b[1;6Q
+# Pane navigation (Ghostty native: Cmd+Option+Arrow)
+keybind = super+alt+arrow_left=text:\x1b[1;2R
+keybind = super+alt+arrow_right=text:\x1b[1;2S
+keybind = super+alt+arrow_up=text:\x1b[1;6P
+keybind = super+alt+arrow_down=text:\x1b[1;6Q
 
-# Close pane
-keybind = cmd+w=text:\x1b[1;6R
+# Pane resizing (Ghostty native: Cmd+Ctrl+Arrow)
+keybind = super+ctrl+arrow_left=text:\x1b[1;7P
+keybind = super+ctrl+arrow_right=text:\x1b[1;7Q
+keybind = super+ctrl+arrow_up=text:\x1b[1;7R
+keybind = super+ctrl+arrow_down=text:\x1b[1;7S
 
-# Zoom/maximize pane toggle
-keybind = cmd+shift+enter=text:\x1b[1;6S
+# Close pane (Ghostty native: Cmd+W)
+keybind = super+w=text:\x1b[1;6R
+
+# Zoom/maximize pane toggle (Ghostty native: Cmd+Shift+Enter)
+keybind = super+shift+enter=text:\x1b[1;6S
