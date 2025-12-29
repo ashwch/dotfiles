@@ -83,12 +83,12 @@ find_command() {
 # =============================================================================
 
 resolve_dependencies() {
-    TMUX=$(find_command tmux) || die "tmux not found. Install with: brew install tmux"
+    TMUX_BIN=$(find_command tmux) || die "tmux not found. Install with: brew install tmux"
     FZF=$(find_command fzf) || die "fzf not found. Install with: brew install fzf"
     ZOXIDE=$(find_command zoxide) || ZOXIDE=""  # Optional
 
     # Verify tmux works
-    $TMUX -V &>/dev/null || die "tmux is not working correctly"
+    $TMUX_BIN -V &>/dev/null || die "tmux is not working correctly"
 }
 
 # =============================================================================
@@ -97,7 +97,7 @@ resolve_dependencies() {
 
 # Get list of existing tmux sessions
 get_sessions() {
-    $TMUX list-sessions -F "#{session_name}" 2>/dev/null || true
+    $TMUX_BIN list-sessions -F "#{session_name}" 2>/dev/null || true
 }
 
 # Generate a unique session name from a directory path
@@ -147,7 +147,7 @@ build_session_list() {
 
         # Get the current path of the active pane
         local pane_path
-        pane_path=$($TMUX display-message -t "$session" -p "#{pane_current_path}" 2>/dev/null) || pane_path="?"
+        pane_path=$($TMUX_BIN display-message -t "$session" -p "#{pane_current_path}" 2>/dev/null) || pane_path="?"
         pane_path=$(shorten_path "$pane_path")
 
         printf "%s  │  %s\n" "$session" "$pane_path"
@@ -222,7 +222,7 @@ create_session_in_dir() {
     local session_name
     session_name=$(generate_session_name "$target_dir")
 
-    exec $TMUX new-session -A -s "$session_name"
+    exec $TMUX_BIN new-session -A -s "$session_name"
 }
 
 # Create or attach to a named session
@@ -233,7 +233,7 @@ create_or_attach() {
     session_name="${session_name//./-}"
     session_name="${session_name//:/-}"
 
-    exec $TMUX new-session -A -s "$session_name"
+    exec $TMUX_BIN new-session -A -s "$session_name"
 }
 
 # Attach to an existing session (creates grouped session for independent view)
@@ -241,7 +241,7 @@ attach_session() {
     local session_name="$1"
     # Use grouped session so each terminal has independent window view
     # but shares the same windows/panes
-    exec $TMUX new-session -t "=$session_name"
+    exec $TMUX_BIN new-session -t "=$session_name"
 }
 
 # =============================================================================
