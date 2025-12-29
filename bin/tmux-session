@@ -1,37 +1,66 @@
 #!/bin/bash
 # Smart tmux session launcher for Ghostty
-# - Uses directory basename + short hash of full path for uniqueness
-# - Handles worktrees and duplicate folder names gracefully
+# - Shows existing sessions via fzf
+# - Allows creating new sessions with custom names
+# - Attaches to selected session or creates new one
 
-# Use full path since this runs before shell init
+# Use full paths since this runs before shell init
 TMUX="/opt/homebrew/bin/tmux"
+FZF="/opt/homebrew/bin/fzf"
 
-get_session_name() {
-    local dir="$PWD"
-
-    # If in home directory, use "main"
-    if [[ "$dir" == "$HOME" ]]; then
-        echo "main"
-        return
-    fi
-
-    # Get basename and short hash of full path
-    local name hash
-    name=$(basename "$dir")
-    hash=$(echo -n "$dir" | md5 | cut -c1-6)
-
-    # Sanitize: tmux session names can't have dots or colons
-    name="${name//./-}"
-    name="${name//:/-}"
-
-    echo "${name}-${hash}"
+# Get existing sessions
+get_sessions() {
+    $TMUX list-sessions -F "#{session_name}" 2>/dev/null
 }
 
-session_name=$(get_session_name)
+# Build the selection list
+build_list() {
+    echo "[+] Create new session"
+    get_sessions | while read -r session; do
+        # Get window count and current path for context
+        info=$($TMUX list-windows -t "$session" -F "#{window_name}" 2>/dev/null | head -1)
+        echo "$session ($info)"
+    done
+}
 
-# Check if session exists
-if $TMUX has-session -t "=$session_name" 2>/dev/null; then
-    exec $TMUX attach-session -t "=$session_name"
+# Prompt user with fzf
+selection=$(build_list | $FZF \
+    --height=40% \
+    --layout=reverse \
+    --border=rounded \
+    --prompt="tmux session > " \
+    --header="Select session or create new" \
+    --print-query \
+    --bind="enter:accept" \
+    --expect=enter)
+
+# Parse fzf output (query on first line, key on second, selection on third)
+query=$(echo "$selection" | sed -n '1p')
+key=$(echo "$selection" | sed -n '2p')
+choice=$(echo "$selection" | sed -n '3p')
+
+# Handle selection
+if [[ -z "$choice" && -z "$query" ]]; then
+    # User cancelled - start default session
+    exec $TMUX new-session -A -s "main"
+elif [[ "$choice" == "[+] Create new session" || -z "$choice" ]]; then
+    # Create new session with query as name (or prompt if empty)
+    if [[ -n "$query" ]]; then
+        session_name="$query"
+    else
+        # Default to directory-based name
+        if [[ "$PWD" == "$HOME" ]]; then
+            session_name="main"
+        else
+            session_name=$(basename "$PWD")
+        fi
+    fi
+    # Sanitize
+    session_name="${session_name//./-}"
+    session_name="${session_name//:/-}"
+    exec $TMUX new-session -A -s "$session_name"
 else
-    exec $TMUX new-session -s "$session_name"
+    # Attach to existing session (extract name before the parenthesis)
+    session_name=$(echo "$choice" | sed 's/ (.*//')
+    exec $TMUX attach-session -t "=$session_name"
 fi
