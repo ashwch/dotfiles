@@ -236,12 +236,10 @@ create_or_attach() {
     exec $TMUX_BIN new-session -A -s "$session_name"
 }
 
-# Attach to an existing session (creates grouped session for independent view)
+# Attach to an existing session
 attach_session() {
     local session_name="$1"
-    # Use grouped session so each terminal has independent window view
-    # but shares the same windows/panes
-    exec $TMUX_BIN new-session -t "=$session_name"
+    exec $TMUX_BIN attach-session -t "$session_name"
 }
 
 # =============================================================================
