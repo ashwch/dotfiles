@@ -2,11 +2,13 @@
 # Smart tmux session launcher for Ghostty
 # - Shows existing sessions via fzf
 # - Allows creating new sessions with custom names
+# - Ctrl-f to pick directory from zoxide history
 # - Attaches to selected session or creates new one
 
 # Use full paths since this runs before shell init
 TMUX="/opt/homebrew/bin/tmux"
 FZF="/opt/homebrew/bin/fzf"
+ZOXIDE="/opt/homebrew/bin/zoxide"
 
 # Get existing sessions
 get_sessions() {
@@ -16,6 +18,7 @@ get_sessions() {
 # Build the selection list
 build_list() {
     echo "[+] Create new session"
+    echo "[~] Pick directory (or Ctrl-f)"
     get_sessions | while read -r session; do
         # Get the current path of the active pane in this session
         pane_path=$($TMUX display-message -t "$session" -p "#{pane_current_path}" 2>/dev/null)
@@ -23,6 +26,18 @@ build_list() {
         pane_path="${pane_path/#$HOME/~}"
         echo "$session  │  $pane_path"
     done
+}
+
+# Directory picker using zoxide
+pick_directory() {
+    $ZOXIDE query -l 2>/dev/null | $FZF \
+        --height=60% \
+        --layout=reverse \
+        --border=rounded \
+        --prompt="cd to > " \
+        --header="Select directory for new session" \
+        --preview="ls -la {}" \
+        --preview-window=right:40%
 }
 
 # Shorten current directory for display
@@ -35,26 +50,52 @@ selection=$(build_list | $FZF \
     --border=rounded \
     --prompt="tmux session > " \
     --header="Current: $current_dir
-Select session or type new name" \
+Select session, type name, or Ctrl-f for directory" \
     --print-query \
-    --bind="enter:accept" \
-    --expect=enter)
+    --bind="ctrl-f:abort+execute(echo '__PICK_DIR__')" \
+    --expect=enter,ctrl-f)
 
 # Parse fzf output (query on first line, key on second, selection on third)
 query=$(echo "$selection" | sed -n '1p')
 key=$(echo "$selection" | sed -n '2p')
 choice=$(echo "$selection" | sed -n '3p')
 
-# Handle selection
-if [[ -z "$choice" && -z "$query" ]]; then
-    # User cancelled - start default session
+# Handle Ctrl-f or directory picker selection
+if [[ "$key" == "ctrl-f" || "$choice" == "[~] Pick directory (or Ctrl-f)" ]]; then
+    target_dir=$(pick_directory)
+    if [[ -n "$target_dir" && -d "$target_dir" ]]; then
+        cd "$target_dir" || exit 1
+        base=$(basename "$target_dir")
+        hash=$(echo -n "$target_dir" | md5 | cut -c1-6)
+        session_name="${base}-${hash}"
+        session_name="${session_name//./-}"
+        session_name="${session_name//:/-}"
+        exec $TMUX new-session -A -s "$session_name"
+    else
+        # Cancelled - fall back to main
+        exec $TMUX new-session -A -s "main"
+    fi
+# Handle empty/cancelled selection
+elif [[ -z "$choice" && -z "$query" ]]; then
     exec $TMUX new-session -A -s "main"
+# Handle create new session
 elif [[ "$choice" == "[+] Create new session" || -z "$choice" ]]; then
-    # Create new session with query as name (or generate unique name)
-    if [[ -n "$query" ]]; then
+    # Check if query looks like a path
+    if [[ "$query" == /* || "$query" == ~* || "$query" == .* ]]; then
+        # Expand ~ and resolve path
+        target_dir="${query/#\~/$HOME}"
+        if [[ -d "$target_dir" ]]; then
+            cd "$target_dir" || exit 1
+            base=$(basename "$target_dir")
+            hash=$(echo -n "$target_dir" | md5 | cut -c1-6)
+            session_name="${base}-${hash}"
+        else
+            session_name="$query"
+        fi
+    elif [[ -n "$query" ]]; then
         session_name="$query"
     else
-        # Generate unique name: basename + short hash of full path
+        # Generate unique name from current directory
         if [[ "$PWD" == "$HOME" ]]; then
             session_name="main"
         else
