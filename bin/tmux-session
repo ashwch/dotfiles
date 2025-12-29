@@ -3,6 +3,9 @@
 # - Uses directory basename + short hash of full path for uniqueness
 # - Handles worktrees and duplicate folder names gracefully
 
+# Use full path since this runs before shell init
+TMUX="/opt/homebrew/bin/tmux"
+
 get_session_name() {
     local dir="$PWD"
 
@@ -27,8 +30,8 @@ get_session_name() {
 session_name=$(get_session_name)
 
 # Check if session exists
-if tmux has-session -t "=$session_name" 2>/dev/null; then
-    exec tmux attach-session -t "=$session_name"
+if $TMUX has-session -t "=$session_name" 2>/dev/null; then
+    exec $TMUX attach-session -t "=$session_name"
 else
-    exec tmux new-session -s "$session_name"
+    exec $TMUX new-session -s "$session_name"
 fi
