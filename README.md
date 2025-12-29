@@ -1,7 +1,7 @@
 # Dotfiles
 
-Opinionated dotfiles for a fast, consistent macOS development environment.  
-The setup is built around zsh, Homebrew, UV for Python, modern CLI tools, and a minimal but informative prompt.
+Opinionated dotfiles for a fast, consistent macOS development environment.
+Built around zsh, Homebrew, UV for Python, modern CLI tools, and a hybrid Ghostty + tmux terminal setup.
 
 ---
 
@@ -10,12 +10,13 @@ The setup is built around zsh, Homebrew, UV for Python, modern CLI tools, and a 
 This repository configures:
 
 - zsh and Starship prompt
+- **Ghostty + tmux** hybrid terminal (native feel, session persistence)
 - Git (aliases, sensible defaults, rerere)
 - Python development using UV and `auto-uv-env`
 - Node.js development (npm, yarn, pnpm with lazy NVM)
 - Modern CLI tools (fzf, eza, zoxide, ripgrep, fd, bat, etc.)
 - Optional SOPS + age based secrets loading
-- Editor/terminal integrations (Ghostty, Claude Code)
+- Editor/terminal integrations (Claude Code)
 
 The goal is to make a fresh macOS machine productive in a few minutes, with repeatable setup and minimal manual steps.
 
@@ -50,7 +51,58 @@ You can also install everything manually if you prefer (see section 4.2).
   - Alias reminder system that suggests shorter commands
 - Starship prompt with Git information and basic runtime indicators
 
-### 3.2 Python Development
+### 3.2 Terminal: Ghostty + tmux
+
+A hybrid setup that combines the best of both worlds:
+
+- **Ghostty** handles tabs and windows (native macOS experience)
+- **tmux** handles panes within each tab (session persistence)
+
+**Why this approach?**
+
+| Feature | Ghostty Native | tmux |
+|---------|----------------|------|
+| Session persistence | No | **Yes** |
+| Survives terminal crash | No | **Yes** |
+| GPU-accelerated rendering | **Yes** | No |
+| Native macOS shortcuts | **Yes** | Configured |
+
+**Smart session picker on new tab:**
+
+When you open a new Ghostty tab, an fzf-powered picker appears:
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Current: ~/projects/api                             │
+│ Select session, type name, or Ctrl-f for directory │
+├─────────────────────────────────────────────────────┤
+│ > [+] Create new session                            │
+│   [~] Pick directory (or Ctrl-f)                    │
+│   backend   │  ~/projects/api                       │
+│   frontend  │  ~/work/webapp                        │
+│   main      │  ~                                    │
+└─────────────────────────────────────────────────────┘
+```
+
+- **Select existing session** → Attach to it
+- **Type a name** → Create new session with that name
+- **Type a path** (`~/projects/foo`) → cd there and create session
+- **Ctrl-f** → Browse zoxide history to pick a directory
+
+**Keyboard shortcuts (same as Ghostty native):**
+
+| Shortcut | Action |
+|----------|--------|
+| `Cmd+D` | Split pane right |
+| `Cmd+Shift+D` | Split pane down |
+| `Cmd+Option+Arrow` | Navigate between panes |
+| `Cmd+Ctrl+Arrow` | Resize panes |
+| `Cmd+W` | Close pane |
+| `Cmd+Shift+Enter` | Toggle pane zoom |
+| `Ctrl-a Ctrl-a` | Switch to last pane |
+| `Ctrl-a d` | Detach (session persists) |
+
+### 3.3 Python Development
 
 - UV-based workflow:
   - `pyrun` wrapper for `uv run` / `uvx`
@@ -59,12 +111,12 @@ You can also install everything manually if you prefer (see section 4.2).
   - Detects `pyproject.toml`
   - Creates and activates `.venv` with the correct Python version
 
-### 3.3 Node.js / JavaScript
+### 3.4 Node.js / JavaScript
 
 - Lazy-loaded NVM
 - Aliases for npm, yarn, and pnpm common tasks (`ni`, `nr`, `nd`, etc.)
 
-### 3.4 Git
+### 3.5 Git
 
 - Short aliases:
   - `gs`, `ga`, `gc`, `gp`, `gpl`, `gl`, `gds`, etc.
@@ -75,7 +127,7 @@ You can also install everything manually if you prefer (see section 4.2).
   - `gcom` (add-all + commit)
   - `gpush` (add-all + commit + push)
 
-### 3.5 Secrets (Optional)
+### 3.6 Secrets (Optional)
 
 - SOPS + age integration for environment secrets stored in `.secrets.yaml`
 - Cached, encrypted loading into the shell
@@ -112,9 +164,10 @@ The script:
   - `~/.fzf.zsh`
   - `~/.editorconfig`
   - `~/.inputrc`
+  - `~/.tmux.conf`
   - `~/.config/starship.toml`
   - `~/.config/git/ignore`
-  - Ghostty config (if present)
+  - `~/.config/ghostty/config`
   - Claude Code settings (if present)
 - Installs additional packages from the `Brewfile` (if present)
 
@@ -150,11 +203,13 @@ ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
 ln -sf ~/dotfiles/.fzf.zsh   ~/.fzf.zsh
 ln -sf ~/dotfiles/.editorconfig ~/.editorconfig
 ln -sf ~/dotfiles/.inputrc   ~/.inputrc
+ln -sf ~/dotfiles/.tmux.conf ~/.tmux.conf
 
 # Config directory
-mkdir -p ~/.config/git
-ln -sf ~/dotfiles/.config/starship.toml ~/.config/starship.toml
-ln -sf ~/dotfiles/.config/git/ignore    ~/.config/git/ignore
+mkdir -p ~/.config/git ~/.config/ghostty
+ln -sf ~/dotfiles/.config/starship.toml   ~/.config/starship.toml
+ln -sf ~/dotfiles/.config/git/ignore      ~/.config/git/ignore
+ln -sf ~/dotfiles/.config/ghostty/config  ~/.config/ghostty/config
 
 source ~/.zshrc
 ```
@@ -207,17 +262,26 @@ brew install --cask font-fira-code-nerd-font
 
 Key files in this repository:
 
-- `.zshenv` – global environment and PATH configuration
-- `.zshrc` – interactive shell configuration
-- `.gitconfig` – Git configuration and aliases
-- `.fzf.zsh` – FZF bindings/completion
-- `.editorconfig` – code style defaults
-- `.inputrc` – readline configuration
-- `.config/starship.toml` – prompt configuration
-- `.config/ghostty/config` – Ghostty terminal configuration (optional)
-- `.claude/` – Claude Code settings (optional)
-- `scripts/` – helper and maintenance scripts
-- `bin/` – custom commands automatically added to `PATH`
+```
+dotfiles/
+├── .zshrc                      # Interactive shell configuration
+├── .zshenv                     # Global environment and PATH
+├── .gitconfig                  # Git configuration and aliases
+├── .tmux.conf                  # tmux configuration with Ghostty integration
+├── .fzf.zsh                    # FZF bindings/completion
+├── .editorconfig               # Code style defaults
+├── .inputrc                    # Readline configuration
+├── bin/
+│   └── tmux-session            # Smart session launcher for Ghostty
+├── .config/
+│   ├── starship.toml           # Prompt configuration
+│   ├── ghostty/config          # Ghostty terminal + tmux keybindings
+│   └── git/ignore              # Global gitignore
+├── .claude/                    # Claude Code settings
+├── scripts/                    # Helper and maintenance scripts
+├── Brewfile                    # Homebrew dependencies
+└── setup.sh                    # One-command installation
+```
 
 You can add machine- or work-specific settings in:
 

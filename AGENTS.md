@@ -1,6 +1,6 @@
-# CLAUDE.md - Development Context & Guidelines
+# AGENTS.md - Development Context & Guidelines
 
-This file provides essential context for Claude Code when working with this dotfiles repository.
+This file provides essential context for AI coding assistants (Claude Code, Cursor, Copilot, etc.) when working with this dotfiles repository.
 
 ## Project Overview
 
@@ -8,8 +8,38 @@ This is a **comprehensive macOS development environment** setup using modern dot
 
 ## Key Technologies & Tools
 
+### Terminal: Ghostty + tmux Hybrid
+
+The terminal setup uses a **hybrid approach** combining Ghostty and tmux:
+
+- **Ghostty** handles tabs and windows (native macOS feel, GPU-accelerated)
+- **tmux** handles panes within each tab (session persistence, survives crashes)
+
+**Key files:**
+- `.config/ghostty/config` - Ghostty configuration with tmux keybindings
+- `.tmux.conf` - tmux configuration with Gruvbox theme
+- `bin/tmux-session` - Smart session launcher with fzf integration
+
+**How it works:**
+1. New Ghostty tab runs `bin/tmux-session`
+2. fzf picker shows existing sessions + directory picker
+3. User selects session to attach, or creates new one
+4. Sessions named by directory with unique hash suffix for worktree support
+
+**Keyboard shortcuts (configured to match Ghostty native):**
+| Shortcut | Action |
+|----------|--------|
+| `Cmd+D` | Split pane right |
+| `Cmd+Shift+D` | Split pane down |
+| `Cmd+Option+Arrow` | Navigate panes |
+| `Cmd+Ctrl+Arrow` | Resize panes |
+| `Cmd+W` | Close pane |
+| `Cmd+Shift+Enter` | Toggle zoom |
+| `Ctrl-a Ctrl-a` | Last pane (double-tap) |
+| `Ctrl-a d` | Detach session |
+
 ### Core Shell Configuration
-- **ZSH** with performance optimizations (~105ms startup time)
+- **ZSH** with performance optimizations (~50ms startup time)
 - **Starship prompt** with Gruvbox theme and comprehensive language indicators
 - **FZF integration** for fuzzy finding and enhanced shell interactions
 
@@ -64,25 +94,29 @@ This is a **comprehensive macOS development environment** setup using modern dot
 ```
 dotfiles/
 ├── .zshrc                    # Main shell configuration
-├── .secrets.yaml            # Encrypted secrets (SOPS + age)
-├── .sops.yaml              # SOPS configuration
-├── .gitconfig               # Git global settings
-├── .fzf.zsh                 # Fuzzy finder configuration
-├── .editorconfig            # Cross-editor coding standards
-├── .inputrc                 # Enhanced readline behavior
-├── bin/                      # Custom scripts (version controlled)
+├── .zshenv                   # Global environment and PATH
+├── .tmux.conf                # tmux configuration with Ghostty integration
+├── .gitconfig                # Git global settings
+├── .fzf.zsh                  # Fuzzy finder configuration
+├── .editorconfig             # Cross-editor coding standards
+├── .inputrc                  # Enhanced readline behavior
+├── .secrets.yaml             # Encrypted secrets (SOPS + age)
+├── .sops.yaml                # SOPS configuration
+├── bin/
+│   └── tmux-session          # Smart tmux session launcher for Ghostty
 ├── .claude/                  # Claude Code settings
-│   ├── settings.json        # Claude hooks and main configuration
-│   └── settings.local.json  # Claude permissions and local settings
+│   ├── settings.json         # Claude hooks and main configuration
+│   └── settings.local.json   # Claude permissions and local settings
 ├── .config/
-│   ├── starship.toml        # Prompt configuration with Gruvbox theme
-│   └── git/ignore           # Global gitignore patterns
+│   ├── starship.toml         # Prompt configuration with Gruvbox theme
+│   ├── ghostty/config        # Ghostty terminal + tmux keybindings
+│   └── git/ignore            # Global gitignore patterns
 ├── scripts/
-│   └── update-dotfiles      # Maintenance automation
-├── Brewfile                 # Reproducible package management
-├── setup.sh                 # Complete environment setup
-├── README.md                # User documentation
-└── CLAUDE.md                # This file - development context
+│   └── update-dotfiles       # Maintenance automation
+├── Brewfile                  # Reproducible package management
+├── setup.sh                  # Complete environment setup
+├── README.md                 # User documentation
+└── AGENTS.md                 # This file - AI assistant context
 ```
 
 ## Development Patterns & Preferences
@@ -237,7 +271,34 @@ git commit -m "Update Claude Code configuration and permissions"
 # - settings.local.json: permissions, local preferences
 ```
 
+### tmux Session Management
+```bash
+# List all tmux sessions
+tmux ls
+
+# Attach to a specific session
+tmux attach -t session-name
+
+# Kill a session
+tmux kill-session -t session-name
+
+# Rename current session (inside tmux)
+Ctrl-a $
+
+# The tmux-session script handles:
+# - Interactive session picker on new Ghostty tab
+# - Directory-based session naming with hash suffix
+# - zoxide integration for directory selection
+# - Automatic session reattachment
+```
+
 ## Integration Points
+
+### Terminal Workflow (Ghostty + tmux)
+- **Session persistence**: Work survives terminal crashes and system restarts
+- **Project-based sessions**: Each project directory gets its own tmux session
+- **Native shortcuts**: Cmd+D, Cmd+W etc. work exactly like Ghostty native
+- **Directory picker**: Ctrl-f in session picker to browse zoxide history
 
 ### Claude Code Workflows
 - **Lint commands**: The .zshrc includes references to running lint/typecheck
@@ -249,6 +310,7 @@ git commit -m "Update Claude Code configuration and permissions"
 - **EditorConfig** provides consistent formatting across all editors
 - **Global git ignore** prevents IDE files from being committed
 - **Shell integration** works with VS Code, terminal emulators
+- **tmux compatibility** - Editor plugins can detect tmux sessions
 
 ## Troubleshooting Common Issues
 
