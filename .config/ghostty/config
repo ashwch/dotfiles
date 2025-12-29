@@ -57,6 +57,11 @@ quick-terminal-animation-duration = 0.15
 
 keybind = shift+enter=text:\n
 
+# Auto-start tmux with smart session naming
+# - In home dir: attaches to "main" session
+# - In project dir: session named after directory
+command = /Users/monty/dotfiles/bin/tmux-session
+
 # ==============================================================================
 # tmux Integration - Ghostty-style shortcuts for tmux panes
 # ==============================================================================

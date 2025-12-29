@@ -1,0 +1,36 @@
+#!/bin/bash
+# Smart tmux session launcher for Ghostty
+# - Names sessions based on directory (if in a project)
+# - Creates unique sessions for home/generic directories
+# - Attaches to existing session if same directory
+
+get_session_name() {
+    local dir="$PWD"
+    local name
+
+    # If in home directory, use generic name with counter
+    if [[ "$dir" == "$HOME" ]]; then
+        echo "main"
+        return
+    fi
+
+    # Use directory basename as session name
+    name=$(basename "$dir")
+
+    # Sanitize: tmux session names can't have dots or colons
+    name="${name//./-}"
+    name="${name//:/-}"
+
+    echo "$name"
+}
+
+session_name=$(get_session_name)
+
+# Check if session exists
+if tmux has-session -t "=$session_name" 2>/dev/null; then
+    # Session exists - attach to it
+    exec tmux attach-session -t "=$session_name"
+else
+    # Create new session
+    exec tmux new-session -s "$session_name"
+fi
