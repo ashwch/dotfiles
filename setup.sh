@@ -186,7 +186,7 @@ if command -v tmux &> /dev/null; then
     # Clone plugins directly (more reliable than TPM script outside tmux)
     PLUGIN_DIR="$HOME/.tmux/plugins"
 
-    for plugin in "tmux-plugins/tmux-resurrect" "tmux-plugins/tmux-continuum" "laktak/extrakto" "fcsonline/tmux-thumbs"; do
+    for plugin in "tmux-plugins/tmux-resurrect" "tmux-plugins/tmux-continuum" "laktak/extrakto" "fcsonline/tmux-thumbs" "wfxr/tmux-fzf-url"; do
         plugin_name=$(basename "$plugin")
         if [ ! -d "$PLUGIN_DIR/$plugin_name" ]; then
             echo "  Installing $plugin_name..."
@@ -229,5 +229,6 @@ echo "   - resurrect (Ctrl-a Ctrl-s to save, Ctrl-a Ctrl-r to restore)"
 echo "   - continuum (auto-saves every 15 min)"
 echo "   - extrakto (Ctrl-a Tab for fzf copy)"
 echo "   - thumbs (Ctrl-a Space for hint copy)"
+echo "   - fzf-url (Ctrl-a u to open URLs)"
 echo ""
 echo "🎉 Your development environment is ready!"

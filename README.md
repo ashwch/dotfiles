@@ -92,6 +92,7 @@ Tabs and windows use Ghostty native shortcuts (`Cmd+T`, `Cmd+N`, `Cmd+1-9`).
 | `Ctrl-a Ctrl-r` | resurrect | Restore session |
 | `Ctrl-a Tab` | extrakto | Copy any visible text with fzf |
 | `Ctrl-a Space` | thumbs | Copy with quick hints |
+| `Ctrl-a u` | fzf-url | Open URLs with fzf |
 | — | continuum | Auto-saves every 15 min |
 
 ---

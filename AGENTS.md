@@ -38,6 +38,7 @@ Ghostty (tabs/windows) → tmux (panes/sessions) → Shell
 | continuum | Auto-save every 15 min | — |
 | extrakto | Copy visible text with fzf | `Ctrl-a Tab` |
 | thumbs | Copy with quick hints | `Ctrl-a Space` |
+| fzf-url | Open URLs with fzf | `Ctrl-a u` |
 
 ### Shell & Tools
 
