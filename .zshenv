@@ -50,4 +50,3 @@ export PYTHONTRACEMALLOC=1              # Track Python allocations
 # Library path fix needed for WeasyPrint when using UV's
 # isolated Python environment.
 export DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_FALLBACK_LIBRARY_PATH"
-
