@@ -169,6 +169,45 @@ else
     mkdir -p "$DOTFILES_DIR/bin"
 fi
 
+# Install TPM (Tmux Plugin Manager) and plugins
+echo "🔌 Setting up tmux plugins..."
+TPM_DIR="$HOME/.tmux/plugins/tpm"
+if [ ! -d "$TPM_DIR" ]; then
+    echo "📥 Installing TPM..."
+    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+else
+    echo "📦 TPM already installed, updating..."
+    git -C "$TPM_DIR" pull
+fi
+
+# Install tmux plugins
+if command -v tmux &> /dev/null; then
+    echo "📥 Installing tmux plugins..."
+    # Clone plugins directly (more reliable than TPM script outside tmux)
+    PLUGIN_DIR="$HOME/.tmux/plugins"
+
+    for plugin in "tmux-plugins/tmux-resurrect" "tmux-plugins/tmux-continuum" "laktak/extrakto" "fcsonline/tmux-thumbs"; do
+        plugin_name=$(basename "$plugin")
+        if [ ! -d "$PLUGIN_DIR/$plugin_name" ]; then
+            echo "  Installing $plugin_name..."
+            git clone "https://github.com/$plugin" "$PLUGIN_DIR/$plugin_name"
+        else
+            echo "  $plugin_name already installed"
+        fi
+    done
+
+    # Build tmux-thumbs (requires Rust, will skip if not available)
+    if [ -d "$PLUGIN_DIR/tmux-thumbs" ] && command -v cargo &> /dev/null; then
+        echo "  Building tmux-thumbs..."
+        (cd "$PLUGIN_DIR/tmux-thumbs" && cargo build --release 2>/dev/null) || echo "  Skipping thumbs build (Rust not available)"
+    fi
+
+    echo "✅ tmux plugins installed"
+else
+    echo "⚠️  tmux not found, skipping plugin installation"
+    echo "   Run 'Ctrl-a I' inside tmux to install plugins later"
+fi
+
 # Install packages from Brewfile
 if [ -f "$DOTFILES_DIR/Brewfile" ]; then
     echo "📦 Installing packages from Brewfile..."
@@ -184,5 +223,11 @@ echo "2. Install Node.js: nvm install node"
 echo "3. Configure Git with your details:"
 echo "   git config --global user.name \"Your Name\""
 echo "   git config --global user.email \"your.email@example.com\""
+echo ""
+echo "📦 tmux plugins installed:"
+echo "   - resurrect (Ctrl-a Ctrl-s to save, Ctrl-a Ctrl-r to restore)"
+echo "   - continuum (auto-saves every 15 min)"
+echo "   - extrakto (Ctrl-a Tab for fzf copy)"
+echo "   - thumbs (Ctrl-a Space for hint copy)"
 echo ""
 echo "🎉 Your development environment is ready!"
