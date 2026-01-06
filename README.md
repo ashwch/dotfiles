@@ -168,9 +168,13 @@ dotfiles/
 ├── .tmux.conf              # tmux + Ghostty integration
 ├── .gitconfig              # Git aliases and settings
 ├── bin/
-│   └── tmux-session        # Smart session launcher
+│   ├── tmux-session        # Smart session launcher
+│   └── code                # VS Code-compatible shim -> zed
 ├── .config/
 │   ├── ghostty/config      # Terminal + tmux keybindings
+│   ├── zed/                # Zed editor configuration
+│   │   ├── settings.json   # Zed editor settings
+│   │   └── keymap.json     # Zed keybindings
 │   └── starship.toml       # Prompt theme
 ├── Brewfile                # Dependencies
 └── setup.sh                # One-command install

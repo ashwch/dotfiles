@@ -140,6 +140,38 @@ else
     echo "⚠️  No Ghostty config found - skipping"
 fi
 
+# Install Zed config
+echo "🧩 Setting up Zed config..."
+mkdir -p "$HOME/.config/zed"
+mkdir -p "$HOME/Library/Application Support/Zed"
+
+if [ -f "$DOTFILES_DIR/.config/zed/settings.json" ]; then
+    backup_and_link "$DOTFILES_DIR/.config/zed/settings.json" "$HOME/.config/zed/settings.json"
+else
+    echo "⚠️  No Zed settings.json found - skipping"
+fi
+
+if [ -f "$DOTFILES_DIR/.config/zed/keymap.json" ]; then
+    backup_and_link "$DOTFILES_DIR/.config/zed/keymap.json" "$HOME/.config/zed/keymap.json"
+else
+    echo "⚠️  No Zed keymap.json found - skipping"
+fi
+
+if [ -d "$DOTFILES_DIR/.config/zed/extensions" ]; then
+    echo "🧩 Installing Zed extensions snapshot..."
+    mkdir -p "$HOME/Library/Application Support/Zed/extensions"
+
+    # Back up existing extensions (directory copy; best-effort)
+    if [ -d "$HOME/Library/Application Support/Zed/extensions" ] && [ ! -L "$HOME/Library/Application Support/Zed/extensions" ]; then
+        cp -R "$HOME/Library/Application Support/Zed/extensions" "$BACKUP_DIR/" 2>/dev/null || true
+    fi
+
+    rsync -a "$DOTFILES_DIR/.config/zed/extensions/" "$HOME/Library/Application Support/Zed/extensions/" 2>/dev/null || \
+        cp -R "$DOTFILES_DIR/.config/zed/extensions/." "$HOME/Library/Application Support/Zed/extensions/"
+else
+    echo "ℹ️  No Zed extensions snapshot found - skipping"
+fi
+
 # Install Claude Code settings
 echo "🤖 Setting up Claude Code settings..."
 mkdir -p "$HOME/.claude"
