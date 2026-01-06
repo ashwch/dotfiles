@@ -4,6 +4,6 @@
 [init]
 	defaultBranch = main
 [core]
-	editor = vim
+	editor = zed --wait
 [rerere]
 	enabled = true

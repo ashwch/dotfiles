@@ -16,8 +16,8 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 # Default Programs
-export EDITOR="code"       # Preferred editor
-export VISUAL="code"       # Preferred visual editor
+export EDITOR="zed --wait"       # Preferred editor
+export VISUAL="zed --wait"       # Preferred visual editor
 export BROWSER="open"      # macOS default browser launcher
 
 # PATH configuration

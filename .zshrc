@@ -350,7 +350,7 @@ alias docs="cd ~/Documents"
 
 # Quick editing
 alias zshrc="$EDITOR ~/.zshrc"
-alias hosts="sudo $EDITOR /etc/hosts"
+alias hosts='SUDO_EDITOR="$EDITOR" sudoedit /etc/hosts'
 
 # Secrets management
 alias refresh-secrets='rm -f "$SECRETS_CACHE" && load_sops_secrets && echo "🔄 Secrets cache refreshed"'
