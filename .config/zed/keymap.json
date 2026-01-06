@@ -1,0 +1,15 @@
+[
+  {
+    "context": "Editor",
+    "bindings": {
+      "cmd-[": "pane::GoBack",
+      "cmd-]": "pane::GoForward"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-b": "workspace::ToggleRightDock"
+    }
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "base_keymap": "VSCode",
+  "theme": "VSCode Dark Modern",
+  "project_panel": {
+    "dock": "right"
+  },
+  "languages": {
+    "Python": {
+      "language_servers": ["ruff", "ty"],
+      "format_on_save": "on",
+      "formatter": [
+        { "language_server": { "name": "ruff" } },
+        { "code_action": "source.organizeImports.ruff" }
+      ],
+      "show_completions_on_input": false
+    }
+  },
+  "lsp": {
+    "ruff": {
+      "initialization_options": {
+        "settings": {
+          "lint": {
+            "enable": true
+          }
+        }
+      }
+    }
+  }
+}
