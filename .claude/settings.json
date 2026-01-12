@@ -40,13 +40,14 @@
   },
   "enabledPlugins": {
     "pr-review-toolkit@claude-code-plugins": false,
-    "monty-code-review@diversiotech": false,
+    "monty-code-review@diversiotech": true,
     "code-review-digest-writer@diversiotech": false,
     "backend-pr-workflow@diversiotech": false,
     "code-review@claude-code-plugins": false,
-    "backend-atomic-commit@diversiotech": false,
+    "backend-atomic-commit@diversiotech": true,
     "bruno-api@diversiotech": true,
-    "ralph-wiggum@claude-plugins-official": true
+    "ralph-wiggum@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
