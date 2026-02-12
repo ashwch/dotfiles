@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
   "hooks": {
     "Notification": [
       {
@@ -6,7 +9,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/monty/dotfiles/bin/claude_alert.sh"
+            "command": "/Users/monty/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10
           }
         ]
       }
@@ -32,6 +36,54 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/monty/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/monty/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/monty/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/monty/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -40,14 +92,23 @@
   },
   "enabledPlugins": {
     "pr-review-toolkit@claude-code-plugins": false,
-    "monty-code-review@diversiotech": true,
-    "code-review-digest-writer@diversiotech": false,
-    "backend-pr-workflow@diversiotech": false,
     "code-review@claude-code-plugins": false,
-    "backend-atomic-commit@diversiotech": true,
-    "bruno-api@diversiotech": true,
     "ralph-wiggum@claude-plugins-official": true,
-    "swift-lsp@claude-plugins-official": true
+    "swift-lsp@claude-plugins-official": true,
+    "session-review-notes@diversiotech": true,
+    "monty-code-review@diversiotech": true,
+    "backend-atomic-commit@diversiotech": true,
+    "backend-pr-workflow@diversiotech": true,
+    "bruno-api@diversiotech": true,
+    "code-review-digest-writer@diversiotech": true,
+    "plan-directory@diversiotech": true,
+    "pr-description-writer@diversiotech": true,
+    "process-code-review@diversiotech": true,
+    "mixpanel-analytics@diversiotech": true,
+    "clickup-ticket@diversiotech": true,
+    "repo-docs@diversiotech": true,
+    "backend-release@diversiotech": true,
+    "terraform@diversiotech": true
   },
   "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
