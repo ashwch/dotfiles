@@ -1,6 +1,54 @@
 #!/bin/bash
 # peon-ping: Warcraft III Peon voice lines for Claude Code hooks
-# Replaces notify.sh — handles sounds, tab titles, and notifications
+#
+# WHY THIS EXISTS
+# ---------------
+# Claude Code fires hook events (SessionStart, Stop, Notification, etc.)
+# but gives no audio/visual feedback when it finishes or needs input.
+# This script plays Warcraft III voice lines and shows a macOS alert
+# dialog so you know when to come back to the terminal.
+#
+# HOW IT'S INSTALLED
+# ------------------
+# The canonical copy lives in the dotfiles repo:
+#
+#   dotfiles/.config/peon-ping/
+#   ├── peon.sh            ← this file
+#   ├── config.json        ← volume, active pack, category toggles
+#   ├── completions.bash   ← tab-completion for the `peon` CLI alias
+#   ├── VERSION            ← installed version (for update checks)
+#   └── packs/             ← sound packs (wav/mp3 files + manifests)
+#
+# These are symlinked into the location Claude Code expects:
+#
+#   ~/.claude/hooks/peon-ping/peon.sh → dotfiles/.config/peon-ping/peon.sh
+#   ~/.claude/hooks/peon-ping/packs/  → dotfiles/.config/peon-ping/packs/
+#   (etc.)
+#
+# Runtime files that are NOT in dotfiles (gitignored / ephemeral):
+#   ~/.claude/hooks/peon-ping/.state.json   ← last-played tracking, prompt timestamps
+#   ~/.claude/hooks/peon-ping/.paused       ← exists when sounds are muted
+#   ~/.claude/hooks/peon-ping/uninstall.sh  ← installer artifact
+#
+# HOOK REGISTRATION
+# -----------------
+# Registered in dotfiles/.claude/settings.json under the "hooks" key for:
+#   SessionStart, UserPromptSubmit, Stop, Notification, PermissionRequest
+#
+# CUSTOMISATION
+# -------------
+# macOS alert style: the send_notification() function uses `display alert`
+# (modal dialog requiring OK) instead of the upstream `display notification`
+# (auto-dismissing banner). Changed to match our previous claude_alert.sh.
+#
+# QUICK CONTROLS
+# --------------
+#   peon --pause        mute sounds
+#   peon --resume       unmute sounds
+#   peon --toggle       toggle mute
+#   peon --status       check if paused/active
+#   peon --pack <name>  switch voice pack
+#   peon --packs        list available packs
 set -uo pipefail
 
 # --- Platform detection ---
@@ -49,6 +97,15 @@ play_sound() {
 }
 
 # --- Platform-aware notification ---
+# Shows an alert when the terminal is NOT focused (checked by caller).
+#
+# On macOS: uses `display alert` (a modal dialog with an OK button) rather
+# than `display notification` (the auto-dismissing banner). The modal is
+# harder to miss when you've switched to another app. This matches the
+# behaviour of our previous claude_alert.sh.
+#
+# On WSL: uses a PowerShell popup rendered on every monitor.
+#
 # Args: msg, title, color (red/blue/yellow)
 send_notification() {
   local msg="$1" title="$2" color="${3:-red}"

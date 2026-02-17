@@ -1,5 +1,28 @@
 #!/bin/bash
-# peon-ping tab completion for bash and zsh
+# Tab completion for the `peon` CLI alias (peon-ping quick controls).
+#
+# Provides completions for: peon --pause, --resume, --pack <name>, etc.
+#
+# WHY bashcompinit IS LOADED FIRST
+# ---------------------------------
+# This file uses bash's `complete` builtin (line 51). In zsh, `complete`
+# doesn't exist unless bashcompinit is loaded first. The upstream version
+# had bashcompinit AFTER the first `complete` call, which caused:
+#
+#   completions.bash:28: command not found: complete
+#
+# Moving bashcompinit to the top fixes this. It's a no-op in bash.
+#
+# SOURCED FROM
+# ------------
+# .zshrc loads this file:
+#   [ -f ~/.claude/hooks/peon-ping/completions.bash ] && source ...
+# That path is a symlink → dotfiles/.config/peon-ping/completions.bash
+
+# zsh compatibility: enable bashcompinit before any `complete` calls
+if [ -n "$ZSH_VERSION" ]; then
+  autoload -Uz bashcompinit 2>/dev/null && bashcompinit
+fi
 
 _peon_completions() {
   local cur prev opts packs_dir
@@ -26,9 +49,3 @@ _peon_completions() {
 }
 
 complete -F _peon_completions peon
-
-# zsh compatibility: if running under zsh, enable bashcompinit
-if [ -n "$ZSH_VERSION" ]; then
-  autoload -Uz bashcompinit 2>/dev/null && bashcompinit
-  complete -F _peon_completions peon
-fi
