@@ -59,6 +59,23 @@ fi
 # Completion System
 # =====================================================
 
+# Custom completions — pre-generated files in ~/.zsh/completions/
+#
+# WHY: Tools like `just` can generate their own zsh completions via
+# `just --completions zsh`, but sourcing them at startup (like
+# `source <(just --completions zsh)`) adds ~20ms. Instead we generate
+# the file once and drop it into fpath so compinit picks it up natively
+# with zero startup cost.
+#
+# HOW TO ADD A NEW TOOL:
+#   1. Generate:  tool --completions zsh > ~/.zsh/completions/_tool
+#   2. Clear cache:  rm -f ~/.zcompdump* && exec zsh
+#   3. Test:  tool <Tab>
+#
+# The directory lives in dotfiles/.zsh/completions/ and is symlinked:
+#   ~/.zsh → dotfiles/.zsh
+fpath=(~/.zsh/completions $fpath)
+
 # Initialize completion system
 autoload -Uz compinit
 if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
@@ -936,6 +953,8 @@ asdf() {
     asdf "$@"
 }
 
-# peon-ping quick controls
+# peon-ping — Warcraft III voice notifications for Claude Code
+# The `peon` alias talks to the hook script for quick mute/pack controls.
+# See dotfiles/.config/peon-ping/peon.sh for full documentation.
 alias peon="bash ~/.claude/hooks/peon-ping/peon.sh"
 [ -f ~/.claude/hooks/peon-ping/completions.bash ] && source ~/.claude/hooks/peon-ping/completions.bash

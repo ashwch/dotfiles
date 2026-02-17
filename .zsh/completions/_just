@@ -1,0 +1,355 @@
+#compdef just
+#
+# Zsh completion for just (https://github.com/casey/just)
+#
+# WHAT THIS FILE IS
+# -----------------
+# Tab completion for the `just` command runner. Lets you press <Tab> to
+# complete recipe names, flags, and recipe parameters.
+#
+# Generated initially with `just --completions zsh` (v1.46.0), then
+# customised to fix two problems with the upstream version:
+#
+#   1. Typing `just <recipe> <Tab>` used to run `just --show <recipe>`
+#      and dump the entire recipe source code into the completion menu.
+#      Now it offers the recipe's parameter names instead (with `=`
+#      appended so you can keep typing the value).
+#
+#   2. Typing `just <recipe> param=<Tab>` used to show a generic
+#      "[value]" hint.  Now it looks for a `.just-completions` file
+#      (see below) and offers the actual valid values.  When no
+#      completions file exists it falls back to showing the default.
+#
+# HOW PARAMETER COMPLETION WORKS
+# ------------------------------
+# When you type `just dev <Tab>`, the completion:
+#   a) Runs `just --list` and parses the recipe's param=default pairs
+#   b) Offers each parameter name with `=` auto-appended
+#
+# When you type `just dev action=<Tab>`, the completion:
+#   a) Searches upward from $PWD for a `.just-completions` file
+#   b) Looks for a line matching `dev.action: val1 val2 val3`
+#   c) If found  → offers those values as completions
+#      If absent → shows "value (default: <default>)" as a hint
+#
+# .just-completions FILE FORMAT
+# -----------------------------
+# Place a `.just-completions` file next to your justfile.
+# One line per recipe parameter, space-separated values:
+#
+#   recipe.param: value1 value2 value3
+#
+# Example:
+#   dev.action: up stop logs status config help
+#   dev.mode: auto tmux headless
+#   dev.service: all backend diversio-frontend rq
+#
+# Parameters without a .just-completions entry fall back to showing
+# the default value from `just --list`.
+#
+# HOW TO REGENERATE
+# -----------------
+# If you upgrade `just` and want the latest flag definitions:
+#
+#   just --completions zsh > ~/.zsh/completions/_just
+#
+# Then re-apply the customisations in the `case $state in args)` block.
+# The custom sections are clearly marked with "CUSTOM:" comments below.
+#
+# INSTALLATION
+# ------------
+# This file lives in the dotfiles repo at .zsh/completions/_just and is
+# picked up automatically via the fpath entry in .zshrc:
+#
+#   fpath=(~/.zsh/completions $fpath)
+#
+# After changes, clear the cache: rm -f ~/.zcompdump* && exec zsh
+
+autoload -U is-at-least
+
+_just() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    # ── UPSTREAM: flag/option definitions from `just --completions zsh` ──
+    # Everything from here to the `_arguments` call is generated.
+    # To update: just --completions zsh > ~/.zsh/completions/_just
+    # then re-apply the CUSTOM blocks in the `case $state in args)` below.
+    local context curcontext="$curcontext" state line
+    local common=(
+'(--no-aliases)--alias-style=[Set list command alias display style]: :(left right separate)' \
+'--ceiling=[Do not ascend above <CEILING> directory when searching for a justfile.]: :_files' \
+'--chooser=[Override binary invoked by \`--choose\`]: :_default' \
+'--color=[Print colorful output]: :(always auto never)' \
+'--command-color=[Echo recipe lines in <COMMAND-COLOR>]: :(black blue cyan green purple red yellow)' \
+'--cygpath=[Use binary at <CYGPATH> to convert between unix and Windows paths.]: :_files' \
+'(-E --dotenv-path)--dotenv-filename=[Search for environment file named <DOTENV-FILENAME> instead of \`.env\`]: :_default' \
+'-E+[Load <DOTENV-PATH> as environment file instead of searching for one]: :_files' \
+'--dotenv-path=[Load <DOTENV-PATH> as environment file instead of searching for one]: :_files' \
+'--dump-format=[Dump justfile as <FORMAT>]:FORMAT:(json just)' \
+'-f+[Use <JUSTFILE> as justfile]: :_files' \
+'--justfile=[Use <JUSTFILE> as justfile]: :_files' \
+'--list-heading=[Print <TEXT> before list]:TEXT:_default' \
+'--list-prefix=[Print <TEXT> before each list item]:TEXT:_default' \
+'*--set=[Override <VARIABLE> with <VALUE>]: :(_just_variables)' \
+'--shell=[Invoke <SHELL> to run recipes]: :_default' \
+'*--shell-arg=[Invoke shell with <SHELL-ARG> as an argument]: :_default' \
+'--tempdir=[Save temporary files to <TEMPDIR>.]: :_files' \
+'--timestamp-format=[Timestamp format string]: :_default' \
+'-d+[Use <WORKING-DIRECTORY> as working directory. --justfile must also be set]: :_files' \
+'--working-directory=[Use <WORKING-DIRECTORY> as working directory. --justfile must also be set]: :_files' \
+'*-c+[Run an arbitrary command with the working directory, \`.env\`, overrides, and exports set]: :_default' \
+'*--command=[Run an arbitrary command with the working directory, \`.env\`, overrides, and exports set]: :_default' \
+'--completions=[Print shell completion script for <SHELL>]:SHELL:(bash elvish fish nushell powershell zsh)' \
+'()-l+[List available recipes in <MODULE> or root if omitted]' \
+'()--list=[List available recipes in <MODULE> or root if omitted]' \
+'--request=[Execute <REQUEST>. For internal testing purposes only. May be changed or removed at any time.]: :_default' \
+'-s+[Show recipe at <PATH>]: :(_just_commands)' \
+'--show=[Show recipe at <PATH>]: :(_just_commands)' \
+'()--usage=[Print recipe usage information]:PATH:_default' \
+'--check[Run \`--fmt\` in '\''check'\'' mode. Exits with 0 if justfile is formatted correctly. Exits with 1 and prints a diff if formatting is required.]' \
+'--clear-shell-args[Clear shell arguments]' \
+'(-q --quiet)-n[Print what just would do without doing it]' \
+'(-q --quiet)--dry-run[Print what just would do without doing it]' \
+'--explain[Print recipe doc comment before running it]' \
+'(-f --justfile -d --working-directory)-g[Use global justfile]' \
+'(-f --justfile -d --working-directory)--global-justfile[Use global justfile]' \
+'--highlight[Highlight echoed recipe lines in bold]' \
+'--list-submodules[List recipes in submodules]' \
+'--no-aliases[Don'\''t show aliases in list]' \
+'--no-deps[Don'\''t run recipe dependencies]' \
+'--no-dotenv[Don'\''t load \`.env\` file]' \
+'--no-highlight[Don'\''t highlight echoed recipe lines in bold]' \
+'--one[Forbid multiple recipes from being invoked on the command line]' \
+'(-n --dry-run)-q[Suppress all output]' \
+'(-n --dry-run)--quiet[Suppress all output]' \
+'--allow-missing[Ignore missing recipe and module errors]' \
+'--shell-command[Invoke <COMMAND> with the shell used to run recipe lines and backticks]' \
+'--timestamp[Print recipe command timestamps]' \
+'-u[Return list and summary entries in source order]' \
+'--unsorted[Return list and summary entries in source order]' \
+'--unstable[Enable unstable features]' \
+'*-v[Use verbose output]' \
+'*--verbose[Use verbose output]' \
+'--yes[Automatically confirm all recipes.]' \
+'--changelog[Print changelog]' \
+'--choose[Select one or more recipes to run using a binary chooser. If \`--chooser\` is not passed the chooser defaults to the value of \$JUST_CHOOSER, falling back to \`fzf\`]' \
+'--dump[Print justfile]' \
+'-e[Edit justfile with editor given by \$VISUAL or \$EDITOR, falling back to \`vim\`]' \
+'--edit[Edit justfile with editor given by \$VISUAL or \$EDITOR, falling back to \`vim\`]' \
+'--evaluate[Evaluate and print all variables. If a variable name is given as an argument, only print that variable'\''s value.]' \
+'--fmt[Format and overwrite justfile]' \
+'--groups[List recipe groups]' \
+'--init[Initialize new justfile in project root]' \
+'--man[Print man page]' \
+'--summary[List names of available recipes]' \
+'--variables[List names of variables]' \
+'-h[Print help]' \
+'--help[Print help]' \
+'-V[Print version]' \
+'--version[Print version]' \
+)
+
+    # ── UPSTREAM: argument routing ──────────────────────────────────────
+    # '1: :_just_commands'  → first arg completes recipe names
+    # '*: :->args'          → subsequent args enter the `args` state
+    #                         where our CUSTOM blocks take over below
+    _arguments "${_arguments_options[@]}" $common \
+        '1: :_just_commands' \
+        '*: :->args' \
+        && ret=0
+
+    case $state in
+        args)
+            curcontext="${curcontext%:*}-${words[2]}:"
+
+            # lastarg = the word currently being typed (what the user pressed <Tab> on)
+            local lastarg=${words[${#words}]}
+            # recipe  = the first word that matches a known recipe name
+            local recipe
+
+            local cmds; cmds=(
+                ${(s: :)$(_call_program commands just --summary)}
+            )
+
+            # Walk the command line to find which recipe the user is invoking.
+            # We skip words[1] ("just") and check each word against the recipe list.
+            for ((i = 2; i < $#words; i++ )) do
+                if [[ ${cmds[(I)${words[i]}]} -gt 0 ]]; then
+                    recipe=${words[i]}
+                    break
+                fi
+            done
+
+            if [[ $lastarg = */* ]]; then
+                # Slash in the argument → treat as a file path
+                _arguments -s -S $common '*:: :_files'
+
+            # ── CUSTOM: complete parameter values (just dev action=<Tab>) ──
+            #
+            # When the cursor is after `param=`, we want to offer the valid
+            # values for that parameter.
+            #
+            # Strategy (in priority order):
+            #   1. Look for a .just-completions file (searched upward from $PWD,
+            #      same directory-walk that `just` does for justfiles).
+            #      If a line like `dev.action: up stop logs` exists → offer those.
+            #   2. Otherwise parse `just --list` output to extract the parameter's
+            #      default value and show it as a hint: "value (default: up)".
+            #   3. If neither works → show a bare "value" hint.
+            #
+            elif [[ $lastarg = *=* ]]; then
+                local param_key=${lastarg%%=*}
+                local -a valid_values
+                local completions_file
+
+                # Walk up from $PWD looking for .just-completions
+                local search_dir=${PWD}
+                while [[ $search_dir != "/" ]]; do
+                    if [[ -f $search_dir/.just-completions ]]; then
+                        completions_file=$search_dir/.just-completions
+                        break
+                    fi
+                    search_dir=${search_dir:h}
+                done
+
+                # Try to match "recipe.param: val1 val2 val3" in the file
+                # NOTE: avoid `local line` — it shadows the _arguments state
+                # variable `line` and breaks the completion system.
+                if [[ -n $completions_file && -n $recipe ]]; then
+                    local comp_line
+                    comp_line=$(grep "^${recipe}\.${param_key}:" "$completions_file" 2>/dev/null)
+                    if [[ -n $comp_line ]]; then
+                        valid_values=(${(s: :)${comp_line#*: }})
+                    fi
+                fi
+
+                if (( ${#valid_values} )); then
+                    # .just-completions provided values → offer them.
+                    # compset -P strips the "key=" prefix from zsh's PREFIX
+                    # variable so candidates match against the part AFTER the =.
+                    # Without this, PREFIX is "action=" and "up" won't match.
+                    compset -P '*='
+                    compadd -- "${valid_values[@]}"
+                else
+                    # Fallback: show the default value from `just --list` as a hint.
+                    # `just --list` output looks like:
+                    #   dev action="up" mode="auto" service="all" ...
+                    # We find the matching param, strip quotes, show the default.
+                    local default_val=""
+                    if [[ $recipe ]]; then
+                        local list_line
+                        list_line=$(_call_program commands just --list 2>/dev/null | grep "^ *${recipe} ")
+                        if [[ -n $list_line ]]; then
+                            local -a pairs
+                            pairs=(${(s: :)${list_line##* ${recipe} }})
+                            for p in "${pairs[@]}"; do
+                                if [[ ${p%%=*} = $param_key ]]; then
+                                    default_val=${p#*=}
+                                    default_val=${default_val#\"}; default_val=${default_val%\"}
+                                    break
+                                fi
+                            done
+                        fi
+                    fi
+                    if [[ -n $default_val ]]; then
+                        _message "value (default: $default_val)"
+                    else
+                        _message "value"
+                    fi
+                fi
+
+            # ── CUSTOM: complete parameter names (just dev <Tab>) ──────────
+            #
+            # When a recipe name has been typed but no `=` yet, offer the
+            # recipe's parameter names with `=` auto-appended.
+            #
+            # We parse `just --list` output which shows each recipe with its
+            # parameters:  "    dev action="up" mode="auto" ..."
+            # We extract just the names (action, mode, ...) and use compadd
+            # with -S '=' so selecting one inserts e.g. `action=`.
+            #
+            elif [[ $recipe ]]; then
+                local -a param_names
+                local list_line
+                list_line=$(_call_program commands just --list 2>/dev/null | grep "^ *${recipe} ")
+                if [[ -n $list_line ]]; then
+                    local -a pairs
+                    pairs=(${(s: :)${list_line##* ${recipe} }})
+                    for p in "${pairs[@]}"; do
+                        param_names+=(${p%%=*})
+                    done
+                fi
+                if (( ${#param_names} )); then
+                    compadd -S '=' -- "${param_names[@]}"
+                else
+                    # Recipe has no parameters → fall back to other recipe names
+                    _arguments -s -S $common '*:: :_just_commands'
+                fi
+            else
+                _arguments -s -S $common '*:: :_just_commands'
+            fi
+        ;;
+    esac
+
+    return ret
+
+}
+
+# ── UPSTREAM: helper functions from `just --completions zsh` ────────────
+# _just_commands  → lists recipe names + variables for first-arg completion
+# _just_variables → lists justfile variables for --set completion
+
+(( $+functions[_just_commands] )) ||
+_just_commands() {
+    [[ $PREFIX = -* ]] && return 1
+    integer ret=1
+    local variables; variables=(
+        ${(s: :)$(_call_program commands just --variables)}
+    )
+    local commands; commands=(
+        ${${${(M)"${(f)$(_call_program commands just --list)}":#    *}/ ##/}/ ##/:Args: }
+    )
+
+    if compset -P '*='; then
+        case "${${words[-1]%=*}#*=}" in
+            *) _message 'value' && ret=0 ;;
+        esac
+    else
+        _describe -t variables 'variables' variables -qS "=" && ret=0
+        _describe -t commands 'just commands' commands "$@"
+    fi
+
+}
+
+if [ "$funcstack[1]" = "_just" ]; then
+    (( $+functions[_just_variables] )) ||
+_just_variables() {
+    [[ $PREFIX = -* ]] && return 1
+    integer ret=1
+    local variables; variables=(
+        ${(s: :)$(_call_program commands just --variables)}
+    )
+
+    if compset -P '*='; then
+        case "${${words[-1]%=*}#*=}" in
+            *) _message 'value' && ret=0 ;;
+        esac
+    else
+        _describe -t variables 'variables' variables && ret=0
+    fi
+
+    return ret
+}
+
+_just "$@"
+else
+    compdef _just just
+fi
