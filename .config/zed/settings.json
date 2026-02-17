@@ -1,4 +1,10 @@
 {
+  "edit_predictions": {
+    "mode": "subtle"
+  },
+  "features": {
+    "edit_prediction_provider": "zed"
+  },
   "base_keymap": "VSCode",
   "theme": "VSCode Dark Modern",
   "project_panel": {
