@@ -4,29 +4,31 @@
 
 ## Overview
 
-macOS development environment with a **hybrid Ghostty + tmux** terminal setup. Fast shell startup (~50ms), modern CLI tools, keyboard-driven workflows.
+macOS development environment with **Ghostty/cmux** terminal setup. Fast shell startup (~50ms), modern CLI tools, keyboard-driven workflows.
 
 ## Architecture
 
-### Hybrid Terminal (Ghostty + tmux)
+### Terminal (Ghostty / cmux)
+
+Both Ghostty and cmux (libghostty-based) read the same config (`~/.config/ghostty/config`):
 
 ```
-Ghostty (tabs/windows) → tmux (panes/sessions) → Shell
+Ghostty (tabs/windows/panes) → Shell
+cmux (workspaces/tabs/panes) → Shell
 ```
 
-- **Ghostty**: Native macOS tabs, GPU-accelerated rendering
-- **tmux**: Pane management, session persistence (survives crashes)
-- **Shortcuts**: Cmd+D, Cmd+W etc. work like Ghostty native, but control tmux
+- **Panes**: Cmd+D, Cmd+W etc. use native pane management in both terminals
+- **tmux**: Optional — run `tmux-session` for session persistence, use Ctrl-a prefix for tmux panes
 
 **Key files:**
 | File | Purpose |
 |------|---------|
-| `.config/ghostty/config` | Terminal config, escape sequences to tmux |
-| `.tmux.conf` | Pane bindings, Gruvbox theme, user-keys |
-| `bin/tmux-session` | Smart session launcher with fzf |
+| `.config/ghostty/config` | Shared config (read by both Ghostty and cmux) |
+| `.tmux.conf` | tmux bindings, Gruvbox theme |
+| `bin/tmux-session` | Smart session launcher with fzf (run manually) |
 
-**How session picker works:**
-1. New Ghostty tab → runs `bin/tmux-session`
+**tmux session picker** (`tmux-session`):
+1. Run `tmux-session` in any terminal tab
 2. fzf shows existing sessions + working directories
 3. Select session, type new name, or Ctrl-f for zoxide directory picker
 4. Sessions named `dirname-hash` (hash for worktree uniqueness)
@@ -34,8 +36,6 @@ Ghostty (tabs/windows) → tmux (panes/sessions) → Shell
 **tmux plugins (via TPM):**
 | Plugin | Purpose | Shortcut |
 |--------|---------|----------|
-| resurrect | Save/restore sessions across reboots | `Ctrl-a Ctrl-s/r` |
-| continuum | Auto-save every 15 min | — |
 | extrakto | Copy visible text with fzf | `Ctrl-a Tab` |
 | thumbs | Copy with quick hints | `Ctrl-a Space` |
 | fzf-url | Open URLs with fzf | `Ctrl-a u` |
@@ -70,12 +70,12 @@ Ghostty (tabs/windows) → tmux (panes/sessions) → Shell
 ```
 dotfiles/
 ├── .zshrc                    # Shell config (aliases, functions, tools)
-├── .tmux.conf                # tmux + Ghostty integration
+├── .tmux.conf                # tmux configuration
 ├── .gitconfig                # Git settings
 ├── bin/
 │   └── tmux-session          # Session launcher (fzf + zoxide)
 ├── .config/
-│   ├── ghostty/config        # Terminal + escape sequences
+│   ├── ghostty/config        # Terminal config (Ghostty/cmux)
 │   └── starship.toml         # Prompt theme
 ├── .claude/                  # Claude Code settings
 ├── Brewfile                  # Dependencies
@@ -119,6 +119,7 @@ brew install <package>
 brew bundle dump --force --file=Brewfile
 
 # tmux sessions
+tmux-session                     # Interactive session picker
 tmux ls                          # List sessions
 tmux attach -t <name>            # Attach
 tmux kill-session -t <name>      # Kill

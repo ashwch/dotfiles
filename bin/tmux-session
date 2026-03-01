@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# tmux-session - Smart tmux session launcher for Ghostty
+# tmux-session - Smart tmux session launcher
 #
 # Features:
 #   - Interactive session picker with fzf

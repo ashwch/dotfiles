@@ -1,14 +1,14 @@
 # Dotfiles
 
-> Opinionated macOS development environment with a hybrid Ghostty + tmux terminal setup.
+> Opinionated macOS development environment with Ghostty/cmux terminal setup.
 
 Fast shell startup (~50ms), modern CLI tools, and keyboard-driven workflows.
 
 ## Highlights
 
-- **Hybrid Terminal** — Ghostty handles tabs, tmux handles panes (with session persistence)
-- **Smart Session Picker** — fzf-powered session management with zoxide integration
-- **Native Shortcuts** — Cmd+D, Cmd+W work exactly like Ghostty, but control tmux
+- **Dual Terminal** — Ghostty and cmux share the same config with native pane management
+- **Optional tmux** — Run `tmux-session` for session persistence, use prefix keys for tmux panes
+- **Native Shortcuts** — Cmd+D, Cmd+W use native panes in both Ghostty and cmux
 - **Fast Shell** — Lazy loading, conditional configuration, ~50ms startup
 - **Modern Tools** — eza, zoxide, ripgrep, fd, bat, fzf, starship
 - **Python/Node Ready** — UV + auto-uv-env, lazy NVM
@@ -24,52 +24,11 @@ cd ~/dotfiles && ./setup.sh
 
 ---
 
-## Terminal: Ghostty + tmux
+## Terminals
 
-The killer feature. Native macOS terminal experience with tmux session persistence.
+### Ghostty / cmux
 
-```
-┌─ Ghostty ──────────────────────────────────────────────────────────────────┐
-│  Tab 1: backend    Tab 2: frontend    Tab 3: docs                          │
-├────────────────────────────────────────────────────────────────────────────┤
-│ ┌─ tmux session: backend ────────────────────────────────────────────────┐ │
-│ │                                │                                       │ │
-│ │  $ vim server.py               │  $ docker logs -f api                 │ │
-│ │                                │                                       │ │
-│ │                                │                                       │ │
-│ ├────────────────────────────────┴───────────────────────────────────────┤ │
-│ │  $ pytest -x                                                           │ │
-│ │                                                                        │ │
-│ └────────────────────────────────────────────────────────────────────────┘ │
-│  session: backend │ user@host │ 14:32                                      │
-└────────────────────────────────────────────────────────────────────────────┘
-```
-
-### Smart Session Picker
-
-Open a new tab → fzf picker appears:
-
-```
-┌─────────────────────────────────────────────────────┐
-│ Current: ~/projects/api                             │
-│ Select session, type name, or Ctrl-f for directory │
-├─────────────────────────────────────────────────────┤
-│ > [+] Create new session                            │
-│   [~] Pick directory (Ctrl-f)                       │
-│   backend   │  ~/projects/api                       │
-│   frontend  │  ~/work/webapp                        │
-│   main      │  ~                                    │
-└─────────────────────────────────────────────────────┘
-```
-
-- **Select session** → Attach
-- **Type name** → Create new
-- **Type path** → cd + create
-- **Ctrl-f** → Browse zoxide history
-
-### Keyboard Shortcuts
-
-Pane shortcuts match Ghostty native, but control tmux:
+Both terminals read the same `~/.config/ghostty/config`. Pane management uses native shortcuts.
 
 | Shortcut | Action |
 |----------|--------|
@@ -79,21 +38,30 @@ Pane shortcuts match Ghostty native, but control tmux:
 | `Cmd+Ctrl+Arrow` | Resize panes |
 | `Cmd+W` | Close pane |
 | `Cmd+Shift+Enter` | Toggle zoom |
-| `Ctrl-a Ctrl-a` | Last pane |
+| `Cmd+T` | New tab |
+| `Cmd+N` | New window/workspace |
+
+### tmux (optional)
+
+Run `tmux-session` to start a tmux session with the fzf picker. Inside tmux, use prefix keys:
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl-a \|` | Split right |
+| `Ctrl-a -` | Split down |
+| `Ctrl-a h/j/k/l` | Navigate panes |
+| `Ctrl-a H/J/K/L` | Resize panes |
+| `Ctrl-a x` | Close pane |
+| `Ctrl-a z` | Toggle zoom |
 | `Ctrl-a d` | Detach |
 
-Tabs and windows use Ghostty native shortcuts (`Cmd+T`, `Cmd+N`, `Cmd+1-9`).
-
-### Plugins
+**tmux plugins (via TPM):**
 
 | Shortcut | Plugin | Action |
 |----------|--------|--------|
-| `Ctrl-a Ctrl-s` | resurrect | Save session (survives reboot) |
-| `Ctrl-a Ctrl-r` | resurrect | Restore session |
 | `Ctrl-a Tab` | extrakto | Copy any visible text with fzf |
 | `Ctrl-a Space` | thumbs | Copy with quick hints |
 | `Ctrl-a u` | fzf-url | Open URLs with fzf |
-| — | continuum | Auto-saves every 15 min |
 
 ---
 
@@ -165,13 +133,13 @@ brew install tmux fzf zoxide eza ripgrep fd bat starship
 ```
 dotfiles/
 ├── .zshrc                  # Shell configuration
-├── .tmux.conf              # tmux + Ghostty integration
+├── .tmux.conf              # tmux configuration
 ├── .gitconfig              # Git aliases and settings
 ├── bin/
 │   ├── tmux-session        # Smart session launcher
 │   └── code                # VS Code-compatible shim -> zed
 ├── .config/
-│   ├── ghostty/config      # Terminal + tmux keybindings
+│   ├── ghostty/config      # Terminal config (Ghostty/cmux)
 │   ├── zed/                # Zed editor configuration
 │   │   ├── settings.json   # Zed editor settings
 │   │   └── keymap.json     # Zed keybindings
@@ -216,7 +184,7 @@ tmux-session --help
 ## Requirements
 
 - macOS 12+
-- Ghostty (recommended) or any terminal
+- Ghostty or cmux (recommended) or any terminal
 - Homebrew
 
 ---
