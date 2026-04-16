@@ -325,6 +325,35 @@ command -v auto-uv-env >/dev/null 2>&1 && {
     }
 }
 
+# =====================================================
+# wt — Interactive Git Worktree Dashboard
+# =====================================================
+#
+# Browse, manage, and navigate git worktrees with fzf TUI.
+# Tool: https://github.com/ashwch/wt
+#
+# Install with: brew install ashwch/tap/wt
+# Source the shell wrapper when available so Enter can cd into a worktree.
+#
+if command -v wt >/dev/null 2>&1; then
+    wt_cd_alias=""
+    if alias cd >/dev/null 2>&1; then
+        wt_cd_alias=$(alias cd)
+        unalias cd
+    fi
+
+    for wt_shell in /opt/homebrew/share/wt/wt.zsh /usr/local/share/wt/wt.zsh; do
+        if [[ -f "$wt_shell" ]]; then
+            source "$wt_shell"
+            break
+        fi
+    done
+
+    if [[ -n "$wt_cd_alias" ]]; then
+        eval "alias ${wt_cd_alias}"
+    fi
+fi
+
 # TheFuck removed - using ZSH's built-in correction (setopt CORRECT) instead
 
 # HTTPie aliases

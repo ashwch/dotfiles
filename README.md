@@ -10,7 +10,7 @@ Fast shell startup (~50ms), modern CLI tools, and keyboard-driven workflows.
 - **Optional tmux** — Run `tmux-session` for session persistence, use prefix keys for tmux panes
 - **Native Shortcuts** — Cmd+D, Cmd+W use native panes in both Ghostty and cmux
 - **Fast Shell** — Lazy loading, conditional configuration, ~50ms startup
-- **Modern Tools** — eza, zoxide, ripgrep, fd, bat, fzf, starship
+- **Modern Tools** — eza, zoxide, ripgrep, fd, bat, fzf, wt, starship
 - **Python/Node Ready** — UV + auto-uv-env, lazy NVM
 
 ---
@@ -80,7 +80,7 @@ Run `tmux-session` to start a tmux session with the fzf picker. Inside tmux, use
 |----------|-------|
 | Python | UV, auto-uv-env (auto-activates venv) |
 | Node.js | Lazy-loaded NVM, npm/yarn/pnpm aliases |
-| Git | Comprehensive aliases (`gs`, `gp`, `gpoh`, `gmo`) |
+| Git | Comprehensive aliases (`gs`, `gp`, `gpoh`, `gmo`), `wt` worktree dashboard |
 
 ### CLI Tools
 
@@ -124,6 +124,7 @@ ln -sf ~/dotfiles/.config/starship.toml ~/.config/starship.toml
 
 # Install tools
 brew install tmux fzf zoxide eza ripgrep fd bat starship
+brew install ashwch/tap/auto-uv-env ashwch/tap/wt
 ```
 
 ---
@@ -173,10 +174,13 @@ refresh-secrets  # Rebuild cache
 time zsh -i -c exit
 
 # Verify tools
-command -v tmux fzf zoxide eza
+command -v tmux fzf zoxide eza wt
 
 # Test session picker
 tmux-session --help
+
+# Test worktree dashboard
+wt --help
 ```
 
 ---

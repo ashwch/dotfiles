@@ -61,11 +61,11 @@ brew install \
     btop \
     httpie \
     tmux \
-    tree
+    tree \
+    ashwch/tap/wt
 
 # Install fonts for better terminal experience
 echo "🔤 Installing Nerd Fonts..."
-brew tap homebrew/cask-fonts
 brew install --cask font-fira-code-nerd-font
 
 # Setup FZF key bindings

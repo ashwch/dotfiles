@@ -47,7 +47,7 @@ cmux (workspaces/tabs/panes) → Shell
 | Shell | ZSH (~50ms startup), Starship prompt (Gruvbox) |
 | Python | UV, auto-uv-env (auto-activates venv from pyproject.toml) |
 | Node.js | Lazy-loaded NVM |
-| CLI | eza, zoxide, ripgrep, fd, bat, fzf |
+| CLI | eza, zoxide, ripgrep, fd, bat, fzf, [wt](https://github.com/ashwch/wt) |
 | Secrets | SOPS + age (encrypted, cached 5min) |
 
 ### Performance Targets
@@ -123,6 +123,10 @@ tmux-session                     # Interactive session picker
 tmux ls                          # List sessions
 tmux attach -t <name>            # Attach
 tmux kill-session -t <name>      # Kill
+
+# Git worktree dashboard
+wt                               # Browse worktrees from $PWD
+wt /path/to/repo                 # Explicit repo path
 
 # Update dotfiles
 ./scripts/update-dotfiles
