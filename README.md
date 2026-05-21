@@ -11,7 +11,7 @@ Fast shell startup (~50ms), modern CLI tools, and keyboard-driven workflows.
 - **Native Shortcuts** — Cmd+D, Cmd+W use native panes in both Ghostty and cmux
 - **Fast Shell** — Lazy loading, conditional configuration, ~50ms startup
 - **Modern Tools** — eza, zoxide, ripgrep, fd, bat, fzf, wt, starship
-- **Python/Node Ready** — UV + auto-uv-env, lazy NVM
+- **Python/Node Ready** — UV + auto-uv-env, pnpm-managed Node.js
 
 ---
 
@@ -79,8 +79,30 @@ Run `tmux-session` to start a tmux session with the fzf picker. Inside tmux, use
 | Language | Tools |
 |----------|-------|
 | Python | UV, auto-uv-env (auto-activates venv) |
-| Node.js | Lazy-loaded NVM, npm/yarn/pnpm aliases |
+| Node.js | Standalone pnpm + pnpm runtime-managed Node.js; npm/yarn muscle-memory aliases route to pnpm |
 | Git | Comprehensive aliases (`gs`, `gp`, `gpoh`, `gmo`), `wt` worktree dashboard |
+
+#### Node.js: pnpm-managed runtime
+
+First-principles model:
+
+```text
+standalone pnpm installer
+  -> installs pnpm in ~/.local/share/pnpm/bin
+  -> pnpm runtime installs Node
+  -> .zshenv puts ~/.local/share/pnpm/bin first on PATH
+```
+
+This keeps Node reproducible without Homebrew Node, Homebrew pnpm, or nvm. The npm/yarn aliases are only shortcuts for old habits; they run pnpm commands.
+
+```bash
+ni                  # pnpm install
+nr build            # pnpm run build
+nd                  # pnpm dev
+pnpm runtime set node lts -g
+```
+
+See [`docs/NODE_TOOLCHAIN.md`](docs/NODE_TOOLCHAIN.md) for the full mental model, verification commands, and troubleshooting notes.
 
 ### CLI Tools
 
@@ -112,7 +134,18 @@ The script installs dependencies, creates backups, and symlinks configs.
 # Clone
 git clone https://github.com/ashwch/dotfiles ~/dotfiles
 
+# Install tools
+brew install tmux fzf zoxide eza ripgrep fd bat starship
+brew install ashwch/tap/auto-uv-env ashwch/tap/wt
+
+# Install standalone pnpm and Node.js via pnpm runtime before symlinking .zshrc
+export PNPM_HOME="$HOME/.local/share/pnpm"
+curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=11.1.3 PNPM_HOME="$PNPM_HOME" SHELL=/bin/zsh sh -
+export PATH="$PNPM_HOME/bin:$PATH"
+pnpm runtime set node lts -g
+
 # Symlink
+ln -sf ~/dotfiles/.zshenv ~/.zshenv
 ln -sf ~/dotfiles/.zshrc ~/.zshrc
 ln -sf ~/dotfiles/.tmux.conf ~/.tmux.conf
 ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
@@ -121,10 +154,6 @@ ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
 mkdir -p ~/.config/ghostty
 ln -sf ~/dotfiles/.config/ghostty/config ~/.config/ghostty/config
 ln -sf ~/dotfiles/.config/starship.toml ~/.config/starship.toml
-
-# Install tools
-brew install tmux fzf zoxide eza ripgrep fd bat starship
-brew install ashwch/tap/auto-uv-env ashwch/tap/wt
 ```
 
 ---

@@ -51,9 +51,7 @@ brew install \
     yq
 
 # Development tools
-brew install \
-    gh \
-    nvm
+brew install gh
 
 # Optional but useful tools
 brew install \
@@ -72,13 +70,51 @@ brew install --cask font-fira-code-nerd-font
 echo "🔍 Setting up FZF..."
 $(brew --prefix)/opt/fzf/install --key-bindings --completion --no-update-rc
 
-# Setup NVM directory
-echo "📂 Setting up NVM..."
-mkdir -p ~/.nvm
-
 # Install Python with UV (separate installer for latest version)
 echo "🐍 Setting up Python environment..."
 curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install standalone pnpm and use it to manage Node.js.
+#
+# First-principles model:
+#   standalone pnpm -> pnpm runtime -> Node.js
+#
+# We intentionally do not install Homebrew node/pnpm/nvm here:
+#   - Homebrew pnpm is a Node script, so it needs Node before it can run.
+#   - nvm is an interactive shell function, so scripts and agents can miss it.
+#   - standalone pnpm can bootstrap itself, then install Node with `pnpm runtime`.
+echo "🟠 Setting up pnpm-managed Node.js..."
+PNPM_VERSION="${PNPM_VERSION:-11.1.3}"
+export PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
+export PATH="$PNPM_HOME/bin:$PATH"
+
+# The pnpm installer appends a generated `# pnpm ... # pnpm end` PATH block to
+# a shell startup file. On this repo, ~/.zshrc is often a symlink to
+# ~/dotfiles/.zshrc, so leaving that generated block would mutate the tracked
+# dotfile during setup. PATH ownership belongs in .zshenv instead.
+remove_pnpm_shell_block() {
+    local file="$1"
+    [ -f "$file" ] || return 0
+    perl -0pi -e 's/\n?^# pnpm\nexport PNPM_HOME=.*?\n# pnpm end\n?/\n/ms' "$file"
+}
+
+if [ ! -x "$PNPM_HOME/bin/pnpm" ] || [ "$("$PNPM_HOME/bin/pnpm" -v 2>/dev/null || true)" != "$PNPM_VERSION" ]; then
+    curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION="$PNPM_VERSION" PNPM_HOME="$PNPM_HOME" SHELL="/bin/zsh" sh -
+fi
+
+# setup.sh symlinks ~/.zshenv for PATH; avoid committing/duplicating pnpm's generated shell block.
+remove_pnpm_shell_block "$HOME/.zshrc"
+remove_pnpm_shell_block "$HOME/.zprofile"
+remove_pnpm_shell_block "$HOME/.profile"
+remove_pnpm_shell_block "$HOME/.bashrc"
+
+export PATH="$PNPM_HOME/bin:$PATH"
+pnpm runtime set node lts -g
+
+# Print the exact binaries that a fresh shell should find. This makes PATH bugs
+# obvious during setup instead of later inside an editor, script, or agent.
+echo "   pnpm: $(command -v pnpm)"
+echo "   node: $(command -v node)"
 
 echo "✅ All tools installed successfully!"
 echo ""
@@ -250,8 +286,9 @@ echo "✅ Dotfiles installed successfully!"
 
 echo ""
 echo "📝 Final configuration steps:"
-echo "1. Restart your terminal or run: source ~/.zshrc"
-echo "2. Install Node.js: nvm install node"
+echo "1. Restart your terminal or run: exec zsh -l"
+echo "2. Node.js is managed by pnpm runtime: pnpm runtime set node lts -g"
+echo "   Docs: ~/dotfiles/docs/NODE_TOOLCHAIN.md"
 echo "3. Configure Git with your details:"
 echo "   git config --global user.name \"Your Name\""
 echo "   git config --global user.email \"your.email@example.com\""

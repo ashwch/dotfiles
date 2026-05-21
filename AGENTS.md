@@ -46,7 +46,7 @@ cmux (workspaces/tabs/panes) → Shell
 |----------|-------|
 | Shell | ZSH (~50ms startup), Starship prompt (Gruvbox) |
 | Python | UV, auto-uv-env (auto-activates venv from pyproject.toml) |
-| Node.js | Lazy-loaded NVM |
+| Node.js | Standalone pnpm + pnpm runtime-managed Node.js |
 | CLI | eza, zoxide, ripgrep, fd, bat, fzf, [wt](https://github.com/ashwch/wt) |
 | Secrets | SOPS + age (encrypted, cached 5min) |
 
@@ -60,7 +60,7 @@ cmux (workspaces/tabs/panes) → Shell
 
 ### Design Principles
 
-1. **Lazy loading** — NVM, completions loaded on-demand
+1. **Lazy loading where useful** — completions and optional tools load on-demand
 2. **Conditional config** — Tools only configured if installed
 3. **Minimal frameworks** — No Oh-My-Zsh, only essential tmux plugins
 4. **Symlink-based** — Easy updates, timestamped backups
@@ -100,9 +100,23 @@ Reads `requires-python` from `pyproject.toml`. First visit creates venv (~1-5s),
 - `AUTO_UV_ENV_QUIET=1` — Suppress output
 - `AUTO_UV_ENV_DEBUG=1` — Debug logging
 
-### Node.js (Lazy NVM)
+### Node.js (pnpm-managed)
 
-NVM loads on first use to avoid startup penalty. Aliases: `nr` (npm run), `nd` (npm run dev).
+Standalone pnpm is installed from `get.pnpm.io`, and Node.js is installed/switched with `pnpm runtime set node lts -g`.
+
+```text
+.zshenv owns PATH
+  -> PNPM_HOME=$HOME/.local/share/pnpm
+  -> PNPM_HOME/bin comes before Homebrew paths
+  -> node/pnpm resolve to pnpm-managed binaries
+```
+
+Local standards for future changes:
+- Do not add `brew "node"`, `brew "pnpm"`, or `brew "nvm"`.
+- Keep pnpm PATH setup in `.zshenv`, not a generated installer block in `.zshrc`.
+- Use `pnpm runtime set node <version> -g` for Node changes.
+- Keep npm/yarn muscle-memory aliases as aliases to pnpm commands only: `nr` (`pnpm run`), `nd` (`pnpm dev`).
+- See `docs/NODE_TOOLCHAIN.md` before changing Node setup.
 
 ### Git
 
