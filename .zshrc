@@ -131,33 +131,33 @@ pyrun() {
 # Node.js Development
 # =====================================================
 
-# NVM Configuration (lazy loading for speed)
-export NVM_DIR="$HOME/.nvm"
-nvm() {
-    unset -f nvm
-    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-    nvm "$@"
-}
+# pnpm-managed Node.js lives in PNPM_HOME/bin.
+# Use `pnpm runtime set node lts -g` to install/switch Node versions.
+#
+# These aliases are translations for muscle memory only:
+#   old habit -> alias -> actual command
+#   npm/yarn  -> ni/yi -> pnpm install
+#   npm run   -> nr/yr -> pnpm run
+#
+# They intentionally do not install or expose npm/yarn binaries. The package
+# manager remains pnpm; the short names only reduce typing.
+alias ni="pnpm install"
+alias nid="pnpm add --save-dev"
+alias nig="pnpm add --global"
+alias nr="pnpm run"
+alias ns="pnpm start"
+alias nt="pnpm test"
+alias nb="pnpm run build"
+alias nd="pnpm dev"
 
-# Node aliases
-alias ni="npm install"
-alias nid="npm install --save-dev"
-alias nig="npm install --global"
-alias nr="npm run"
-alias ns="npm start"
-alias nt="npm test"
-alias nb="npm run build"
-alias nd="npm run dev"
-
-# Yarn alternatives
-alias yi="yarn install"
-alias ya="yarn add"
-alias yad="yarn add --dev"
-alias yr="yarn run"
-alias ys="yarn start"
-alias yt="yarn test"
-alias yb="yarn build"
-alias yd="yarn dev"
+alias yi="pnpm install"
+alias ya="pnpm add"
+alias yad="pnpm add --save-dev"
+alias yr="pnpm run"
+alias ys="pnpm start"
+alias yt="pnpm test"
+alias yb="pnpm run build"
+alias yd="pnpm dev"
 
 # pnpm aliases
 alias pi="pnpm install"
@@ -547,12 +547,12 @@ alias_tip_preexec() {
         "git merge origin/release") echo "💡 Tip: You can use 'gmor' instead of 'git merge origin/release'" >&2 ;;
         "git branch") echo "💡 Tip: You can use 'gb' instead of 'git branch'" >&2 ;;
         "git log --oneline --graph --decorate") echo "💡 Tip: You can use 'gl' instead of 'git log --oneline --graph --decorate'" >&2 ;;
-        "npm install") echo "💡 Tip: You can use 'ni' instead of 'npm install'" >&2 ;;
-        "npm run dev") echo "💡 Tip: You can use 'nd' instead of 'npm run dev'" >&2 ;;
-        "npm run build") echo "💡 Tip: You can use 'nb' instead of 'npm run build'" >&2 ;;
-        "npm run"*) echo "💡 Tip: You can use 'nr' instead of 'npm run'" >&2 ;;
-        "npm start") echo "💡 Tip: You can use 'ns' instead of 'npm start'" >&2 ;;
-        "npm test") echo "💡 Tip: You can use 'nt' instead of 'npm test'" >&2 ;;
+        "pnpm install") echo "💡 Tip: You can use 'ni' instead of 'pnpm install'" >&2 ;;
+        "pnpm dev"|"pnpm run dev") echo "💡 Tip: You can use 'nd' instead of 'pnpm dev'" >&2 ;;
+        "pnpm run build") echo "💡 Tip: You can use 'nb' instead of 'pnpm run build'" >&2 ;;
+        "pnpm run"*) echo "💡 Tip: You can use 'nr' instead of 'pnpm run'" >&2 ;;
+        "pnpm start") echo "💡 Tip: You can use 'ns' instead of 'pnpm start'" >&2 ;;
+        "pnpm test") echo "💡 Tip: You can use 'nt' instead of 'pnpm test'" >&2 ;;
         "docker ps") echo "💡 Tip: You can use 'dps' instead of 'docker ps'" >&2 ;;
         "docker-compose up") echo "💡 Tip: You can use 'dcu' instead of 'docker-compose up'" >&2 ;;
         "docker-compose down") echo "💡 Tip: You can use 'dcd' instead of 'docker-compose down'" >&2 ;;
@@ -605,11 +605,11 @@ show_aliases() {
     echo "  gconv       - Conventional commits"
     echo ""
     echo "📦 Node.js:"
-    echo "  ni          - npm install"
-    echo "  nr          - npm run"
-    echo "  ns          - npm start"
-    echo "  nd          - npm run dev"
-    echo "  nt          - npm test"
+    echo "  ni          - pnpm install"
+    echo "  nr          - pnpm run"
+    echo "  ns          - pnpm start"
+    echo "  nd          - pnpm dev"
+    echo "  nt          - pnpm test"
     echo ""
     echo "🐳 Docker:"
     echo "  d           - docker"
@@ -663,12 +663,13 @@ ALIAS_REMINDERS=(
     "git merge origin/release"           "gmor"
     "git branch"                         "gb"
     "git log --oneline --graph --decorate" "gl"
-    "npm install"                        "ni"
-    "npm run dev"                        "nd"
-    "npm run build"                      "nb"
-    "npm run"                            "nr"
-    "npm start"                          "ns"
-    "npm test"                           "nt"
+    "pnpm install"                       "ni"
+    "pnpm dev"                           "nd"
+    "pnpm run dev"                       "nd"
+    "pnpm run build"                     "nb"
+    "pnpm run"                           "nr"
+    "pnpm start"                         "ns"
+    "pnpm test"                          "nt"
     "docker ps"                          "dps"
     "docker-compose up"                  "dcu"
     "docker-compose down"                "dcd"

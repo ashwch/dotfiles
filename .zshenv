@@ -20,11 +20,26 @@ export EDITOR="zed --wait"       # Preferred editor
 export VISUAL="zed --wait"       # Preferred visual editor
 export BROWSER="open"      # macOS default browser launcher
 
+# pnpm-managed Node.js runtime and global package bin directory.
+#
+# Why this lives in .zshenv instead of .zshrc:
+#   .zshenv -> every zsh process, including non-interactive scripts/agents
+#   .zshrc  -> interactive terminals only
+#
+# Keeping PNPM_HOME here means tools launched by editors, hooks, or agents see
+# the same Node/pnpm binaries as an interactive terminal.
+export PNPM_HOME="$HOME/.local/share/pnpm"
+
 # PATH configuration
-# Use the zsh-specific path array to avoid duplicates and
-# make ordering explicit. "typeset -U" keeps entries unique.
+# Use the zsh-specific path array to avoid duplicates and make ordering explicit.
+# "typeset -U" keeps entries unique.
+#
+# Mental model:
+#   command lookup checks PATH from top to bottom
+#   PNPM_HOME/bin first -> pnpm-managed node/pnpm win over Homebrew/system copies
 typeset -U path PATH        # Deduplicate PATH while preserving order
 path=(
+  $PNPM_HOME/bin
   /opt/homebrew/bin
   /opt/homebrew/sbin
   $HOME/.local/bin
