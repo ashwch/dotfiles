@@ -111,7 +111,9 @@
     "terraform@diversiotech": true
   },
   "alwaysThinkingEnabled": true,
+  "effortLevel": "xhigh",
   "skipDangerousModePermissionPrompt": true,
+  "voiceEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1753991243673
   }

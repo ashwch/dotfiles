@@ -1,4 +1,19 @@
 {
+  "cli_default_open_behavior": "existing_window",
+  "outline_panel": {
+    "dock": "right"
+  },
+  "collaboration_panel": {
+    "dock": "right"
+  },
+  "agent": {
+    "dock": "left",
+    "favorite_models": [],
+    "model_parameters": []
+  },
+  "git_panel": {
+    "dock": "right"
+  },
   "edit_predictions": {
     "mode": "subtle"
   },
