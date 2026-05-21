@@ -156,7 +156,7 @@ alias yad="pnpm add --save-dev"
 alias yr="pnpm run"
 alias ys="pnpm start"
 alias yt="pnpm test"
-alias yb="pnpm build"
+alias yb="pnpm run build"
 alias yd="pnpm dev"
 
 # pnpm aliases

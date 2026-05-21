@@ -4,6 +4,7 @@
 # Run this script on a fresh macOS system
 
 set -e
+set -o pipefail
 
 echo "🍎 Setting up macOS Development Environment"
 echo "==========================================="
@@ -95,7 +96,7 @@ export PATH="$PNPM_HOME/bin:$PATH"
 remove_pnpm_shell_block() {
     local file="$1"
     [ -f "$file" ] || return 0
-    perl -0pi -e 's/\n?^# pnpm\nexport PNPM_HOME=.*?\n# pnpm end\n?/\n/ms' "$file"
+    perl -0pi -e 's/\n?^# pnpm\nexport PNPM_HOME=.*?\n# pnpm end\n?/\n/msg' "$file"
 }
 
 if [ ! -x "$PNPM_HOME/bin/pnpm" ] || [ "$("$PNPM_HOME/bin/pnpm" -v 2>/dev/null || true)" != "$PNPM_VERSION" ]; then
